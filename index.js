@@ -47,8 +47,8 @@ function playScreenSetup(buttonID){
         gameMode = "normal";
         
         if(y.matches){
-            document.getElementById("gameContainer").style.gridTemplateColumns = "repeat(5, 60px)";
-            document.getElementById("gameContainer").style.gridTemplateRows = "repeat(2, 60px)";
+            document.getElementById("gameContainer").style.gridTemplateColumns = "repeat(5, 65px)";
+            document.getElementById("gameContainer").style.gridTemplateRows = "repeat(2, 65px)";
             document.getElementById("gameContainer").style.gap = "5px";
             document.getElementById("gameContainer").style.marginTop = "110px";
         }
@@ -86,8 +86,8 @@ function playScreenSetup(buttonID){
         }
 
         if(y.matches){
-            document.getElementById("gameContainer").style.gridTemplateColumns = "repeat(5, 60px)";
-            document.getElementById("gameContainer").style.gridTemplateRows = "repeat(4, 60px)";
+            document.getElementById("gameContainer").style.gridTemplateColumns = "repeat(5, 65px)";
+            document.getElementById("gameContainer").style.gridTemplateRows = "repeat(4, 65px)";
             document.getElementById("gameContainer").style.gap = "5px";
             document.getElementById("gameContainer").style.marginTop = "50px";
         }
