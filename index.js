@@ -117,7 +117,7 @@ function playScreenSetup(buttonID){
 function winScreen(){
     setTimeout(() => {
         document.querySelector("h1").innerHTML = "YOU WIN!!!!";
-        var audio = new Audio("Mario Sound.m4a");
+        var audio = new Audio("crash.mp3");
         audio.play();
     }, 1000);
 
