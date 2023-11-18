@@ -1,8 +1,8 @@
 body{
     background: linear-gradient(-45deg, #FE7BE5, #974EC3, #504099, #313866);
     background-size: 400% 400%;
-    animation: gradient 10s ease infinite;
-    height: 100vh;
+    animation: gradient 20s ease infinite;
+    min-height: 100vh;
 }
 
 h1{
@@ -116,12 +116,6 @@ img{
         font-size: 3.5rem; 
     }
 
-    #buttonContainer{
-        flex-direction: column;
-        margin: 0;
-        padding: 0;
-        gap: 0px;
-    }
 
     #normal, #hard{
         font-size: 3rem;
@@ -136,13 +130,6 @@ img{
 @media (min-width: 481px) and (max-width: 991px){
     h1{
         font-size: 6rem;
-    }
-
-    #buttonContainer{
-        flex-direction: column;
-        margin: 0;
-        padding: 0;
-        gap: 0px;
     }
 
 }

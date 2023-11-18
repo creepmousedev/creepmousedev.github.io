@@ -47,14 +47,14 @@ function playScreenSetup(buttonID){
         gameMode = "normal";
         
         if(y.matches){
-            document.getElementById("gameContainer").style.gridTemplateColumns = "repeat(5, 75px)";
-            document.getElementById("gameContainer").style.gridTemplateRows = "repeat(2, 75px)";
+            document.getElementById("gameContainer").style.gridTemplateColumns = "repeat(5, 60px)";
+            document.getElementById("gameContainer").style.gridTemplateRows = "repeat(2, 60px)";
             document.getElementById("gameContainer").style.gap = "5px";
             document.getElementById("gameContainer").style.marginTop = "110px";
         }
         else if(m.matches){
-            document.getElementById("gameContainer").style.gridTemplateColumns = "repeat(5, 100px)";
-            document.getElementById("gameContainer").style.gridTemplateRows = "repeat(2, 100px)";
+            document.getElementById("gameContainer").style.gridTemplateColumns = "repeat(5, 85px)";
+            document.getElementById("gameContainer").style.gridTemplateRows = "repeat(2, 85px)";
             document.getElementById("gameContainer").style.gap = "10px";
             document.getElementById("gameContainer").style.marginTop = "60px";
         }
@@ -86,8 +86,8 @@ function playScreenSetup(buttonID){
         }
 
         if(y.matches){
-            document.getElementById("gameContainer").style.gridTemplateColumns = "repeat(5, 75px)";
-            document.getElementById("gameContainer").style.gridTemplateRows = "repeat(4, 75px)";
+            document.getElementById("gameContainer").style.gridTemplateColumns = "repeat(5, 60px)";
+            document.getElementById("gameContainer").style.gridTemplateRows = "repeat(4, 60px)";
             document.getElementById("gameContainer").style.gap = "5px";
             document.getElementById("gameContainer").style.marginTop = "50px";
         }
