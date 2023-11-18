@@ -124,10 +124,6 @@ img{
     .front{
         border-radius: 0.25rem;
     }
-
-    .back{
-        border-radius: 0.25rem;
-    }
 }
 
 @media (min-width: 481px) and (max-width: 991px){
