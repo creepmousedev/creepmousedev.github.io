@@ -2,14 +2,16 @@ body{
     background: linear-gradient(-45deg, #FE7BE5, #974EC3, #504099, #313866);
     background-size: 400% 400%;
     animation: gradient 20s ease infinite;
-    min-height: 100vh;
 }
 
 h1{
-    font-family: Nabla, sans-serif;
     margin-top: 20px;
     font-size: 7rem; 
     margin-bottom: 0px;
+}
+
+h1, p, #playAgain, button{
+    font-family: Nabla, sans-serif !important;
 }
 
 a{
@@ -17,7 +19,6 @@ a{
 }
 
 p{
-    font-family: Nabla, sans-serif;
     font-size: 1.5rem;
     margin: 0;
 }
@@ -27,7 +28,6 @@ p{
 }
 
 #playAgain{
-    font-family: Nabla, sans-serif;
     text-align: center;
     position: relative;
     top: 100px;
@@ -38,7 +38,6 @@ p{
 }
 
 button{
-    font-family: Nabla, sans-serif;
     font-size: 4rem;
     margin-top: 150px;
     background-color: transparent;
@@ -51,6 +50,7 @@ button{
     flex-direction: column;
     justify-content: center;
     gap: 0px;
+    margin-top: 20px;
 }
 
 #hard{
@@ -68,7 +68,6 @@ button{
 
 img{
     height: 100%;
-    border-radius: 1rem;
 }
 
 .card{
@@ -84,7 +83,6 @@ img{
 .back{
     height: 100%;
     width: 100%;
-    border-radius: 1rem;
     position: absolute;
     backface-visibility: hidden;
     background-size: contain;
@@ -93,6 +91,7 @@ img{
 .front{
     background-image: url("https://render.fineartamerica.com/images/images-profile-flow/400/images/artworkimages/mediumlarge/3/fractal-tree-50-matthias-hauser.jpg");
     box-shadow: 0 0 5px 2px rgba(50, 50, 50, .25);
+    border-radius: 1rem;
 }
 
 .back{
@@ -124,11 +123,42 @@ img{
     .front{
         border-radius: 0.25rem;
     }
+
+    .back, img{
+        border-radius: 0rem;
+    }
+
+    #buttonContainer{
+        margin-top: 50px;
+    }
 }
 
 @media (min-width: 481px) and (max-width: 991px){
     h1{
-        font-size: 6rem;
+        font-size: 5rem;
     }
+
+    .front{
+        border-radius: 0.5rem;
+    }
+
+    .back, img{
+        border-radius: 0rem;
+    }
+
+    #buttonContainer{
+        margin-top: 25px;
+    }
+
+    #normal, #hard{
+        font-size: 3rem;
+    }
+}
+
+@media (min-width: 992px){
+    h1{
+        margin: 0;
+    }
+
 
 }

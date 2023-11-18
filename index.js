@@ -97,10 +97,17 @@ function playScreenSetup(buttonID){
             document.getElementById("gameContainer").style.gap = "5px";
             document.getElementById("gameContainer").style.marginTop = "50px";
         }
+        else if(z.matches){
+            document.getElementById("gameContainer").style.gridTemplateColumns = "repeat(5, 125px)";
+            document.getElementById("gameContainer").style.gridTemplateRows = "repeat(4, 125px)";
+            document.getElementById("gameContainer").style.gap = "10px";
+            document.getElementById("gameContainer").style.marginTop = "50px";
+        }
         else{
             document.getElementById("gameContainer").style.gridTemplateColumns = "repeat(5, 150px)";
             document.getElementById("gameContainer").style.gridTemplateRows = "repeat(4, 150px)";
             document.getElementById("gameContainer").style.gap = "15px";
+            document.getElementById("gameContainer").style.marginTop = "0px";
         }
         generatePlacementArray(20);
     }
