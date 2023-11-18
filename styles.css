@@ -121,7 +121,10 @@ img{
         font-size: 3rem;
     }
 
-    .front,
+    .front{
+        border-radius: 0.25rem;
+    }
+
     .back{
         border-radius: 0.25rem;
     }
