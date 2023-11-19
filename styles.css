@@ -1,4 +1,4 @@
-body{
+/*body{
     background: linear-gradient(-45deg, #FE7BE5, #974EC3, #504099);
     background-size: 400% 400%;
     animation: gradient 20s ease infinite;
@@ -8,13 +8,13 @@ h1{
     margin-top: 20px;
     font-size: 7rem; 
     margin-bottom: 0px;
-}
+}*/
 
 h1, p, #playAgain, button{
     font-family: 'Nabla', sans-serif !important;
 }
 
-a{
+/*a{
     text-decoration: none;
 }
 
@@ -161,4 +161,4 @@ img{
     }
 
 
-}
+}*/
