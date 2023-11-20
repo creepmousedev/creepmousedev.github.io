@@ -15,9 +15,7 @@ document.getElementById("hard").addEventListener('click', clickPlay);
 if(/iPhone/.test(navigator.userAgent)){
     document.getElementById("normal").style.fontFamily = "'Chakra Petch', sans-serif";
     document.getElementById("hard").style.fontFamily = "'Chakra Petch', sans-serif";
-    document.getElementById("match").style.fontFamily = "'Chakra Petch', sans-serif";
-    document.getElementById("email").style.fontFamily = "'Chakra Petch', sans-serif";
-    document.getElementById("playAgain").style.fontFamily = "'Chakra Petch', sans-serif";
+    document.getElementsByTagName("body")[0].style.fontFamily = "'Chakra Petch', sans-serif";
 }
 
 function randomImages(){
