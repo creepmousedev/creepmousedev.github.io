@@ -12,10 +12,14 @@ var gameMode = "";
 document.getElementById("normal").addEventListener('click', clickPlay);
 document.getElementById("hard").addEventListener('click', clickPlay);
 
-if("iPhone".test(navigator.userAgent)){
-    document.querySelector("body").style.fontFamily = "'Chakra Petch', sans-serif";
-    document.querySelector("body").style.color = "orange";
-    document.querySelector("body").style.textShadow = "5px 3px 5px black";
+if(/iPhone/.test(navigator.userAgent)){
+    //document.querySelector("body").style.fontFamily = "'Chakra Petch', sans-serif";
+    //document.querySelector("body").style.color = "orange";
+    //document.querySelector("body").style.textShadow = "5px 3px 5px black";
+
+    document.getElementById("normal").style.fontFamily = "'Chakra Petch', sans-serif";
+    document.getElementById("normal").style.color = "orange";
+    
 }
 
 function randomImages(){
