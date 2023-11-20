@@ -13,13 +13,11 @@ document.getElementById("normal").addEventListener('click', clickPlay);
 document.getElementById("hard").addEventListener('click', clickPlay);
 
 if(/iPhone/.test(navigator.userAgent)){
-    //document.querySelector("body").style.fontFamily = "'Chakra Petch', sans-serif";
-    //document.querySelector("body").style.color = "orange";
-    //document.querySelector("body").style.textShadow = "5px 3px 5px black";
-
     document.getElementById("normal").style.fontFamily = "'Chakra Petch', sans-serif";
-    document.getElementById("normal").style.color = "orange";
-    
+    document.getElementById("hard").style.fontFamily = "'Chakra Petch', sans-serif";
+    document.getElementById("match").style.fontFamily = "'Chakra Petch', sans-serif";
+    document.getElementById("email").style.fontFamily = "'Chakra Petch', sans-serif";
+    document.getElementById("playAgain").style.fontFamily = "'Chakra Petch', sans-serif";
 }
 
 function randomImages(){

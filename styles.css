@@ -12,6 +12,7 @@ h1{
 
 h1, p, #playAgain, button{
     font-family: 'Nabla', sans-serif;
+    color: orange;
     text-shadow: 5px 3px 5px black;
 }
 
