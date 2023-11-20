@@ -12,6 +12,12 @@ var gameMode = "";
 document.getElementById("normal").addEventListener('click', clickPlay);
 document.getElementById("hard").addEventListener('click', clickPlay);
 
+if(/iPhone|iPod/.test(navigator.userAgent) && !window.MSStream){
+    document.querySelector("body").style.fontFamily = "'Chakra Petch', sans-serif";
+    document.querySelector("body").style.color = "orange";
+    document.querySelector("body").style.textShadow = "5px 3px 5px black";
+}
+
 function randomImages(){
 
     randomImageArray = [];
