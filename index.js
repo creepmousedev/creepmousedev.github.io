@@ -30,6 +30,11 @@ function randomImages(){
     usedNumberArray = [];
 }
 
+function playSound(soundFile){
+    var audio = new Audio(soundFile);
+    audio.play();
+}
+
 function generatePlacementArray(matchNumber){
     for(var x = 0; x < matchNumber; x++){
         randomNumber = Math.floor(Math.random() * matchNumber);
@@ -130,9 +135,8 @@ function playScreenSetup(buttonID){
 function winScreen(){
     setTimeout(() => {
         document.querySelector("h1").innerHTML = "YOU WIN!!!!";
-        var audio = new Audio("Mario sound.mp3");
-        audio.play();
-    }, 1000);
+        playSound("winChime.mp3");
+    }, 2250);
 
     setTimeout(() => {
         //NEED TO UPDATE THIS SO THAT USER CAN CHOOSE DIFFICULTY - LABEL???
@@ -196,6 +200,9 @@ function imageClicked(){
         if(checkArray[0].src === checkArray[1].src){
            idArray.push(checkArray[0].id);
            idArray.push(checkArray[1].id);
+           setTimeout(() => {
+            playSound("correctDing.mp3");
+           }, 750);
            ++numberOfMatches;
            if(numberOfMatches === 5 && gameMode === "normal"){
                 winScreen();
