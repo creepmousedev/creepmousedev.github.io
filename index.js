@@ -202,7 +202,7 @@ function imageClicked(){
            idArray.push(checkArray[1].id);
            setTimeout(() => {
             playSound("correctDing.mp3");
-           }, 750);
+           }, 500);
            ++numberOfMatches;
            if(numberOfMatches === 5 && gameMode === "normal"){
                 winScreen();
