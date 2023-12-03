@@ -5,6 +5,7 @@ body{
     font-family: 'Press Start 2P', sans-serif;
     text-align: center;
     height: 100%;
+    touch-action: none;
 }
 
 h1{
