@@ -1,0 +1,71 @@
+body{
+    min-height: 100vh;
+    background-color: #ebecf1;
+    font-family: 'Press Start 2P', sans-serif;
+}
+
+#nameContainer{
+    display: flex;
+    justify-content: space-around;
+}
+
+#playerName, #playerOne, #playerTwo{
+    padding-top: 0;
+    padding-bottom: 0;
+    margin: 0;
+    border: 0;
+    height: 16px;
+}
+
+#playerTurn{
+    text-align: center;
+}
+
+.gameScreen{
+    display: flex;
+    flex-direction: column;
+    height: 500px;
+    gap: 20px;
+    justify-content: center;
+    align-items: center;
+}
+
+.gameBoard{
+    display: grid;
+    height: 320px;
+    width: 320px;
+    gap: 10px;
+    background: linear-gradient(-45deg, #206a5d, #1f4068);
+    background-size: 400% 400%;
+    animation: gradient 20s ease infinite;
+    grid-template-columns: repeat(3, 100px);
+    grid-template-rows: repeat(3, 100px);
+}
+
+.space{
+    background-color: #ebecf1;
+    background-size: 75%;
+    background-repeat: no-repeat;
+    background-position: center;
+    
+}
+
+.playerOnePressed{
+    background-image: url("/images/x-lg.svg");
+}
+
+.playerTwoPressed{
+    background-image: url("/images/circle.svg");
+}
+
+@keyframes gradient{
+    0% {
+		background-position: 0% 50%;
+	}
+	50% {
+		background-position: 100% 50%;
+	}
+	100% {
+		background-position: 0% 50%;
+	}
+}

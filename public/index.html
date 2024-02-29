@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic Tac Toe</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css?family=Press+Start+2P" rel="stylesheet">
+</head>
+<body>
+    <h1 style="text-align: center;">TIC TAC TOE</h1>
+    <div id="nameContainer">
+        <input type="text" id="playerName" placeholder="Enter Name Here"></input>
+        <p id="playerOne"></p>
+        <p id="playerTwo">waiting for player</p>
+        
+    </div>
+    <h3 id="playerTurn"></h3>
+    <div class="gameScreen">
+        <div class="gameBoard">
+            <div id="box1" class="space"></div>
+            <div id="box2" class="space"></div>
+            <div id="box3" class="space"></div>
+            <div id="box4" class="space"></div>
+            <div id="box5" class="space"></div>
+            <div id="box6" class="space"></div>
+            <div id="box7" class="space"></div>
+            <div id="box8" class="space"></div>
+            <div id="box9" class="space"></div>
+        </div>
+    </div>
+
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/scripts/game.js"></script>
+</body>
+</html>
