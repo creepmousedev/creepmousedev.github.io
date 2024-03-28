@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic Tac Toe</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css?family=Press+Start+2P" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1 id="title" style="text-align: center;">TIC TAC TOE</h1>
+    <div id="nameContainer">
+        <input type="text" id="playerName" placeholder="Enter Name Here" maxlength="12"></input>
+        <p id="playerOne"></p>
+        <p id="playerTwo">waiting for player</p>
+    </div>
+    <div id="gameInfoContainer">
+        <div id="p1Info">
+            <p class="playerInfo" id="p1GamesWon">Games Won: </p>
+            <p class="playerInfo" id="p1GamesLost">Games Lost: </p>
+            <p class="playerInfo" id="p1Tie">Ties: </p>
+        </div>
+        <div id="p2Info">
+            <p class="playerInfo" id="p2GamesWon">Games Won: </p>
+            <p class="playerInfo" id="p2GamesLost">Games Lost: </p>
+            <p class="playerInfo" id="p2Tie">Ties: </p>
+        </div>
+    </div>
+    <div id="directions">
+    <h3 id="playerTurn"></h3>
+    </div>
+    <div id="buttonContainer">
+    <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+        <button type="button" class="btn btn-primary btn-lg px-4 gap-3" id="mainButton">Start</button>
+    </div>
+    </div>
+    <div class="gameScreen">
+        <div class="gameBoard">
+            <div id="box1" class="space"></div>
+            <div id="box1A" class="threeD"></div>
+            <div id="box1B" class="coverBox"></div>
+            <div id="box2" class="space"></div>
+            <div id="box2A" class="threeD"></div>
+            <div id="box2B" class="coverBox"></div>
+            <div id="box3" class="space"></div>
+            <div id="box3A" class="threeD"></div>
+            <div id="box3B" class="coverBox"></div>
+            <div id="box4" class="space"></div>
+            <div id="box4A" class="threeD"></div>
+            <div id="box4B" class="coverBox"></div>
+            <div id="box5" class="space"></div>
+            <div id="box5A" class="threeD"></div>
+            <div id="box5B" class="coverBox"></div>
+            <div id="box6" class="space"></div>
+            <div id="box6A" class="threeD"></div>
+            <div id="box6B" class="coverBox"></div>
+            <div id="box7" class="space"></div>
+            <div id="box7A" class="threeD"></div>
+            <div id="box7B" class="coverBox"></div>
+            <div id="box8" class="space"></div>
+            <div id="box8A" class="threeD"></div>
+            <div id="box8B" class="coverBox"></div>
+            <div id="box9" class="space"></div>
+            <div id="box9A" class="threeD"></div>
+            <div id="box9B" class="coverBox"></div>
+        </div>
+    </div>
+
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/scripts/game.js"></script>
+</body>
+</html>
