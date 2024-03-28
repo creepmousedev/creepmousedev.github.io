@@ -228,3 +228,72 @@ body{
         scale: 1;
     }
 }
+
+@media (min-width: 319px) and (max-width: 560px) {
+    h1{
+        font-size: 1.5rem; 
+    }
+
+    #buttonContainer{
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        margin-top: 10px;
+        margin-bottom: 30px;
+        scale: 0.85;
+    }
+
+    #playerName, #playerOne, #playerTwo{
+        width: 150px;
+        font-size: 14px;
+    }
+
+    .gameScreen{
+        height: 400px;
+    }
+    
+    .gameBoard{
+        height: 300px;
+        width: 300px;
+        grid-template-columns: repeat(3, 90px);
+        grid-template-rows: repeat(3, 90px);
+        margin-bottom: 100px;  
+    }
+
+    #playerTurn{
+        scale: .90;
+    }
+
+    #gameInfoContainer{
+        margin-top: 15px;
+    }
+
+    #directions{
+        margin-top: 30px;
+    }
+
+}
+
+@media (min-width: 561px) and (max-width: 991px){
+    h1{
+        font-size: 2rem;
+    }
+
+    #buttonContainer{
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        margin-top: 20px;
+    }
+
+    #playerName, #playerOne, #playerTwo{
+        width: 175px;
+        font-size: 13.5px;
+    }
+
+    #gameInfoContainer{
+        justify-content: space-evenly;
+    }
+}
