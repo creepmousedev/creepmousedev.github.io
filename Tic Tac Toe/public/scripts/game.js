@@ -26,6 +26,12 @@ for(var x = 0; x < 9; x++){
 }
 
 function testDown(event){
+
+    document.getElementById(event.target.id).addEventListener("pointermove", (event) => {
+        console.log("left space");
+        testUp(event);
+    });
+
     document.getElementById(`${event.target.id}A`).classList.remove("threeD");
     document.getElementById(event.target.id).classList.remove("squishUp");
     document.getElementById(event.target.id).classList.add("squishDown");
@@ -123,6 +129,7 @@ socket.on('winner', (player, playerDidWin) => {
     for(var y = 0; y < 9; y++){
         document.getElementsByClassName("space")[y].removeEventListener("pointerdown", disableDown);
         document.getElementsByClassName("space")[y].removeEventListener("pointerup", assignMove);
+        document.getElementsByClassName("space")[y].removeEventListener("pointermove", assignMove);
     }
 
     document.getElementById("mainButton").innerText = "Play Again?";
@@ -206,6 +213,7 @@ function assignMove(event){
                 for(var y = 0; y < 9; y++){
                     document.getElementsByClassName("space")[y].removeEventListener("pointerdown", disableDown);
                     document.getElementsByClassName("space")[y].removeEventListener("pointerup", assignMove);
+                    document.getElementsByClassName("space")[y].removeEventListener("pointermove", assignMove);
                 }
             }
             if(event.target.className === "space squishDown"){
@@ -241,13 +249,17 @@ function assignMove(event){
             for(var x = 0; x < 9; x++){
                 document.getElementsByClassName("space")[x].removeEventListener("pointerdown", disableDown);
                 document.getElementsByClassName("space")[x].removeEventListener("pointerup", assignMove);
+                document.getElementsByClassName("space")[x].removeEventListener("pointermove", assignMove);
             }
 }
 
 function disableDown(event){
+
     document.getElementById(`${event.target.id}A`).classList.remove("threeD");
     document.getElementById(event.target.id).classList.remove("squishUp");
     document.getElementById(event.target.id).classList.add("squishDown");
+
+    document.getElementById(event.target.id).addEventListener("pointermove", assignMove);
 }
 
 function playTurn(){
