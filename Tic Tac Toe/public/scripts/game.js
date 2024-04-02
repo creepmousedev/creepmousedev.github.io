@@ -137,14 +137,22 @@ socket.on('winner', (player, playerDidWin) => {
 });
 
 socket.on('left message', () => {
-    
+    console.log("i was called");
     if(document.getElementById("playerTwo").innerText !== 'waiting for player'){
         document.getElementById("playerTurn").innerText = `${document.getElementById("playerTwo").innerText} left`;
     }
     else{
         document.getElementById("playerTurn").innerText = "Other player left";
     }
+
+    document.getElementById("mainButton").hidden = false;
+    document.getElementById("mainButton").innerText = "Find other player?";
+    //document.getElementById("mainButton").addEventListener("pointerdown", inputName);
 });
+
+function reload(){
+    location.reload();
+}
 
 function sendMovesToOtherPlayer(movesArray){
     console.log("made it here? with " + movesArray);
