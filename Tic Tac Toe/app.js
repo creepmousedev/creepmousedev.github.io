@@ -1,8 +1,9 @@
 import express from "express";
 import {createServer} from "http";
+import { type } from "os";
 import {Server} from "socket.io";
 
-const port = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3000;
 const app = express();
 const server = createServer(app);
 const io = new Server(server);
@@ -10,6 +11,10 @@ const io = new Server(server);
 function Client(name, room){
     this.name = name;
     this.room = room;
+}
+
+let socketInfo = {
+    name: ""
 }
 
 var playerOneName = "";
@@ -34,45 +39,42 @@ io.on('connection', (socket) => {
             }
         });
         console.log(arrayOfClients);
+        console.log(`current room: ${currentRoom}`);
     }
     
     socket.on('enter name', (playerName) => {
         if(!playerOneName){
             playerOneName = playerName;
-
-            //clientOne.name = playerName;
-            //clientOne.room = socket.id;
+            
+            
             arrayOfClients.push(new Client(playerName, socket.id));
-            //console.log(arrayOfClients);
         }
         else{
-
+            
+            
             arrayOfClients.forEach((player) => {
                 if(playerOneName === player.name){
                     console.log(`the player is: ${player.name}`);
                     socket.join(player.room);
-                    //clientTwo.name = playerName;
-                    //clientTwo.room = player.room;
                     arrayOfClients.push(new Client(playerName, player.room));
-                    //socket.to(player.room).emit('enter name', playerName); //WE CAN SEND P1 NAME HERE
                     io.in(player.room).emit('enter name', playerName, playerOneName, player.room);
                 }
             });
             playerOneName = "";
-            //console.log(`# of clients in room: ${currentRoom} is ${io.sockets.adapter.rooms.get(currentRoom).size}`);
         }
 
         console.log(arrayOfClients);
-        //console.log(`this name is being sent: ${playerName}`);
-        //socket.broadcast.emit('enter name', playerName);
+        console.log(`current room: ${currentRoom}`);
         
     });
 
     socket.on('play', (player, room, movesArray, didWin) => {
-        console.log(`current player: ${player} and did win? ${didWin}`);
+        
         io.in(room).emit('whose turn', player);
         io.in(room).emit('play', room, movesArray, didWin);
-        console.log(room + " " + movesArray + " was sent");
+        //console.log(room + " " + movesArray + " was sent");
+        
+
     });    
     
     socket.on('winner', (player, room, didWin) => {
@@ -80,12 +82,54 @@ io.on('connection', (socket) => {
         io.in(room).emit('winner', player, didWin);
     });
 
+    socket.on('left message', () => {
+        console.log("kick all out");
+    });
+
+    socket.on('disconnecting', () => {
+        
+        
+        let rooms = socket.rooms;
+
+        arrayOfClients.forEach((client) => {
+            rooms.forEach((room) => {
+                console.log(client);
+                if(room === client.room){
+                    io.in(room).emit('left message');
+                    console.log(room);
+                    console.log(client.room);
+                    console.log(arrayOfClients.indexOf(client));
+                    arrayOfClients.splice(arrayOfClients.indexOf(client), 1);
+                    
+                    //io.in(room).disconnectSockets(true);
+                    //REMOVE ALL CLIENTS THAT HAVE THE ROOM
+                    console.log("after splice");
+                    console.log(arrayOfClients);
+                    arrayOfClients.forEach((client) => {
+                        if(client.room === room){
+                            console.log(true);
+                            arrayOfClients.splice(arrayOfClients.indexOf(client), 1);
+                            io.in(room).socketsLeave(room);
+                        }
+                    });
+                }
+            });
+
+        });
+        //console.log(socket.rooms);
+        console.log(arrayOfClients);
+        
+        
+
+    });
+
     socket.on('disconnect', (reason) => {
-        socket.broadcast.emit('left message');
-        console.log(reason);
+        socket.emit('left message');
+        
+        
     });
 });
 
-server.listen(port, () => {
-    console.log(`up and running on ${port}`);
+server.listen(PORT, () => {
+    console.log(`up and running on ${PORT}`);
 });
