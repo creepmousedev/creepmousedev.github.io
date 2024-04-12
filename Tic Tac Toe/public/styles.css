@@ -16,12 +16,15 @@ body{
 #directions{
     height: 35px;
     margin: 5px;
-    margin-top: 40px;
-    
+    margin: 40px 0px 25px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 #buttonContainer{
-    height: 50px;
+    height: 35px;
+ 
 }
 
 .playerInfo{
@@ -29,12 +32,16 @@ body{
     margin: 5px;
 }
 
-#playerName, #playerOne, #playerTwo{
+#playerOne, #playerTwo{
     padding-top: 0;
     padding-bottom: 0;
     margin: 0;
     border: 0;
     height: 16px;
+}
+
+#playerName{
+    box-shadow: -15px 15px 20px rgba(0, 0, 0, .4);
 }
 
 #playerTurn{
@@ -165,6 +172,16 @@ body{
     
 }
 
+.loading{
+    height: 35px;
+    background-repeat: no-repeat;
+}
+
+#loadImage{
+    height: 40px;
+}
+
+
 @keyframes gradient{
     0% {
 		background-position: 0% 50%;
@@ -234,6 +251,14 @@ body{
         font-size: 1.5rem; 
     }
 
+    h3{
+        font-size: 1rem;
+    }
+
+    #loadImage{
+        height: 30px;
+    }
+
     #buttonContainer{
         display: flex;
         flex-direction: column;
@@ -278,6 +303,10 @@ body{
 @media (min-width: 561px) and (max-width: 991px){
     h1{
         font-size: 2rem;
+    }
+
+    h3{
+        font-size: 1.5rem;
     }
 
     #buttonContainer{
