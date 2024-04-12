@@ -20,6 +20,8 @@ var didWin = false;
 var firstGame = true;
 var mouseClick = 0;
 
+document.getElementById("loadImage").hidden = true;
+
 for(var x = 0; x < 9; x++){
     document.getElementsByClassName("space")[x].addEventListener("pointerdown", testDown);
     document.getElementsByClassName("space")[x].addEventListener("pointerup", testUp);
@@ -85,6 +87,7 @@ socket.on('play', (room, movesArray, didWin) => {
 
 socket.on('whose turn', (player) => {
    
+    document.getElementById("loadImage").hidden = true;
     currentPlayer = player;
     console.log(`current player: ${currentPlayer}`);
     document.getElementById("playerTurn").innerText = `${player}'s turn`;
@@ -203,6 +206,11 @@ function inputName(event){
             }
             document.getElementById("mainButton").hidden = true;
             document.getElementById("playerName").hidden = true;
+            document.getElementById("loadImage").hidden = false;
+            document.getElementById("playerTurn").hidden = false;
+            document.getElementById("playerTurn").innerText = 'searching for player...';
+            
+            
         }
         else{
             if(firstGame === false){
