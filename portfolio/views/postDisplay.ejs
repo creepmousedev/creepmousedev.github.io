@@ -1,0 +1,27 @@
+<%- include("partials/header.ejs") %>
+    <h1><%=titleFromFile%></h1>
+    <h2><%=dateFromFile%></h2>
+    
+    <% if(locals.updateMessage){ %>
+        <form method="POST" action="/articles/:id?_method=PUT">
+            <textarea name="editArea" id="editArea" cols="30" rows="10"><%= messageFromFile %></textarea>
+            <input type="hidden" name="editMessage" id="editMessage" value="false">
+            <input type="hidden" name="postNumber" id="postNumber" value=<%=postNumber%>>
+            <input type="submit" value="Save Post">
+        </form>
+    <% } else{ %>
+        <p><%=messageFromFile%></p>
+    <% } %>
+    <form method="POST" action="/articles/:id?_method=DELETE">
+        <input type="hidden" name="postNumber" id="postNumber" value=<%=postNumber%>>
+        <button type="submit">Delete Post</button>
+    </form>
+
+    <form method="POST" action="/articles/:id?_method=PUT">
+        <input type="hidden" name="postNumber" id="postNumber" value=<%=postNumber%>>
+        <input type="hidden" name="editMessage" id="editMessage" value="true">
+        <input type="submit" value="Edit Post">
+    </form>
+</div>
+</body>
+</html>

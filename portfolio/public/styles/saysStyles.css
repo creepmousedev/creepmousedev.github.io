@@ -1,0 +1,153 @@
+body{
+    background: linear-gradient(-45deg, #FE7BE5, #974EC3, #504099);
+    background-size: 400% 400%;
+    animation: gradient 20s ease infinite;
+    font-family: 'Press Start 2P', sans-serif;
+    text-align: center;
+    height: 100%;
+    touch-action: none;
+}
+
+h1{
+    margin-top: 20px;
+    font-size: 3rem;
+}
+
+h2{
+    font-size: 20px;
+}
+
+#gameContainer{
+    display: block;
+    background: linear-gradient(-45deg,#504099, #974EC3, #FE7BE5);
+    background-size: 400% 400%;
+    animation: gradient 20s ease infinite;
+    position: relative;
+    margin: auto;
+    height: 500px;
+    width: 500px;
+    top: 35px;
+    border: 3px solid black;
+    border-radius: 2rem;
+}
+
+.buttons{
+    position: absolute;
+    width: 193.75px;
+    height: 137.5px;
+    background-repeat: no-repeat;
+    background-size: contain;
+    user-select: none;
+}
+
+.btn{
+    position: relative;
+    top: 150px;
+    margin-top: 30px;
+}
+
+#scores{
+    display: flex;
+    gap: 90px;
+    justify-content: center;
+    position: relative;
+    margin: 0;
+    padding: 0;
+    top: 40px;
+}
+
+#greenButton{
+    /*background-image: url("images/saysImages/newGreenButtonhighlight.png"); USED IN THE MEANTIME TO 'PRELOAD' THE HIGHLIGHT IMAGES TO REDUCE FLICKER*/
+    background-image: url("../images/saysImages/newGreenButton.png");
+    top: -3px;
+    left: 0px;
+}
+
+#blueButton{    
+    /*background-image: url("newBlueButtonHighlight.png");*/
+    background-image: url("../images/saysImages/newBlueButton.png");
+    top: -3px;
+    left: 300px;
+}
+
+#redButton{
+    /*background-image: url("newRedButtonHighlight.png");*/
+    background-image: url("../images/saysImages/newRedButton.png");
+    top: 360px;
+    left: 0px;
+}
+
+#yellowButton{
+    /*background-image: url("newYellowButtonHighlight.png");*/
+    background-image: url("../images/saysImages/newYellowButton.png");
+    top: 360px;
+    left: 300px;
+}
+
+@keyframes gradient{
+    0% {
+		background-position: 0% 50%;
+	}
+	50% {
+		background-position: 100% 50%;
+	}
+	100% {
+		background-position: 0% 50%;
+	}
+}
+
+@media (min-width: 319px) and (max-width: 560px) {
+    h1{
+        font-size: 1.5rem; 
+    }
+
+    h2{
+        font-size: .75rem;
+    }
+
+    #gameContainer{
+        height: 350px;
+        width: 350px;
+    }
+
+    .buttons{
+        width: 124px;
+        height: 88px;
+    }
+
+    #greenButton{
+        top: 0px;
+    }
+
+    #blueButton{
+        top: 0px;
+        left: 220px;
+    }
+
+    #yellowButton{
+        top: 255px;
+        left: 220px;
+    }
+
+    #redButton{
+        top: 255px;
+        left: 0px;
+    }
+
+    .btn{
+        top: 80px;
+        scale: .75;
+    }
+
+    #scores{
+        gap: 70px;
+    }
+
+}
+
+@media (min-width: 561px) and (max-width: 991px){
+    h1{
+        font-size: 2rem;
+    }
+
+}

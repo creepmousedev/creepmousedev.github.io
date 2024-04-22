@@ -1,0 +1,328 @@
+body{
+    min-height: 100vh;
+    background-color: #ebecf1;
+    font-family: 'Press Start 2P', sans-serif;
+}
+
+#title{
+    margin-top: 30px;
+}
+
+#nameContainer, #gameInfoContainer{
+    display: flex;
+    justify-content: space-around;
+}
+
+#directions{
+    height: 35px;
+    margin: 5px;
+    margin: 40px 0px 25px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#buttonContainer{
+    height: 35px;
+ 
+}
+
+.playerInfo{
+    font-size: 12px;
+    margin: 5px;
+}
+
+#playerOne, #playerTwo{
+    padding-top: 0;
+    padding-bottom: 0;
+    margin: 0;
+    border: 0;
+    height: 16px;
+}
+
+#playerName{
+    box-shadow: -15px 15px 20px rgba(0, 0, 0, .4);
+}
+
+#playerTurn{
+    text-align: center;
+    margin: 0;
+}
+
+#box1, #box1A, #box1B{
+    grid-row: 1;
+    grid-column: 1;
+}
+
+#box2, #box2A, #box2B{
+    grid-row: 1;
+    grid-column: 2;
+}
+
+#box3, #box3A, #box3B{
+    grid-row: 1;
+    grid-column: 3;
+}
+
+#box4, #box4A, #box4B{
+    grid-row: 2;
+    grid-column: 1;
+}
+
+#box5, #box5A, #box5B{
+    grid-row: 2;
+    grid-column: 2;
+}
+
+#box6, #box6A, #box6B{
+    grid-row: 2;
+    grid-column: 3;
+}
+
+#box7, #box7A, #box7B{
+    grid-row: 3;
+    grid-column: 1;
+}
+
+#box8, #box8A, #box8B{
+    grid-row: 3;
+    grid-column: 2;
+}
+
+#box9, #box9A, #box9B{
+    grid-row: 3;
+    grid-column: 3;
+}
+
+.coverBox{
+    background-color: #ebecf1;
+    z-index: 1;
+}
+
+.threeD{
+    box-shadow: -15px 15px 20px rgba(0, 0, 0, .65);
+    animation: buttonEffect 0.5s;
+    z-index: 2;
+}
+
+.squishDown{
+    background-color: #ebecf1;
+    scale: 1.15;
+    animation: scaleUp 0.3s;
+    z-index: 2;
+}
+
+.squishUp{
+    background-color: #ebecf1;
+    scale: 1;
+    animation: scaleDown 0.3s;
+    z-index: 2;
+}
+
+#mainButton{
+    box-shadow: -15px 15px 20px rgba(0, 0, 0, .65);
+}
+
+.gameScreen{
+    display: flex;
+    flex-direction: column;
+    height: 500px;
+    gap: 20px;
+    justify-content: center;
+    align-items: center;
+}
+
+.gameBoard{
+    display: grid;
+    height: 320px;
+    width: 320px;
+    gap: 15px;
+    background: linear-gradient(-90deg, #2CD3E1, #A459D1, #F266AB, #FFB84C);
+    background-size: 400% 400%;
+    animation: gradient 7.5s ease infinite;
+    grid-template-columns: repeat(3, 100px);
+    grid-template-rows: repeat(3, 100px);
+    margin-bottom: 80px;
+    
+}
+
+.space{
+    background-color: #ebecf1;
+    background-size: 75%;
+    background-repeat: no-repeat;
+    background-position: center;
+    z-index: 3;
+    
+}
+
+.playerOnePressed{
+    background-image: url("../images/ticImages/x-lg.svg");
+    background-color: transparent;
+    z-index: 3;
+    animation: reveal 1s;
+
+    
+}
+
+.playerTwoPressed{
+    background-image: url("../images/ticImages/circle.svg");
+    background-color: transparent;
+    z-index: 3;
+    animation: reveal 1s;
+    
+}
+
+.loading{
+    height: 35px;
+    background-repeat: no-repeat;
+}
+
+#loadImage{
+    height: 40px;
+}
+
+
+@keyframes gradient{
+    0% {
+		background-position: 0% 50%;
+	}
+	50% {
+		background-position: 100% 50%;
+	}
+	100% {
+		background-position: 0% 50%;
+	}
+}
+
+@keyframes buttonEffect{
+
+    0%{
+        box-shadow: 0px 0px 0px rgba(0, 0, 0, 0);
+    }
+
+    100%{
+        box-shadow: -15px 15px 20px rgba(0, 0, 0, .65);
+
+    }
+}
+
+@keyframes reveal{
+    0% {
+        scale: 0;
+    }
+
+    40% {
+        scale: 2.2;
+    }
+
+    60% {
+        scale: 0.5;
+    }
+
+    80% {
+        scale: 1.5;
+    }
+
+    100%{
+        scale: 1;
+    }
+}
+
+@keyframes scaleUp {
+    0%{
+        scale: 1;
+    }
+    100%{
+        scale: 1.15;
+    }
+}
+
+@keyframes scaleDown {
+    0%{
+        scale: 1.15;
+    }
+    100%{
+        scale: 1;
+    }
+}
+
+@media (min-width: 319px) and (max-width: 560px) {
+    h1{
+        font-size: 1.5rem; 
+    }
+
+    h3{
+        font-size: 1rem;
+    }
+
+    #loadImage{
+        height: 30px;
+    }
+
+    #buttonContainer{
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        margin-top: 10px;
+        margin-bottom: 30px;
+        scale: 0.85;
+    }
+
+    #playerName, #playerOne, #playerTwo{
+        width: 150px;
+        font-size: 14px;
+    }
+
+    .gameScreen{
+        height: 400px;
+    }
+    
+    .gameBoard{
+        height: 300px;
+        width: 300px;
+        grid-template-columns: repeat(3, 90px);
+        grid-template-rows: repeat(3, 90px);
+        margin-bottom: 100px;  
+    }
+
+    #playerTurn{
+        scale: .90;
+    }
+
+    #gameInfoContainer{
+        margin-top: 15px;
+    }
+
+    #directions{
+        margin-top: 30px;
+    }
+
+}
+
+@media (min-width: 561px) and (max-width: 991px){
+    h1{
+        font-size: 2rem;
+    }
+
+    h3{
+        font-size: 1.5rem;
+    }
+
+    #buttonContainer{
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        margin-top: 20px;
+    }
+
+    #playerName, #playerOne, #playerTwo{
+        width: 175px;
+        font-size: 13.5px;
+    }
+
+    #gameInfoContainer{
+        justify-content: space-evenly;
+    }
+}

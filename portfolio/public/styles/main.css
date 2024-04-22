@@ -1,0 +1,117 @@
+@import url('https://fonts.googleapis.com/css2?family=Rubik+Doodle+Shadow&display=swap');
+
+body{
+    height: 100vh;
+    background-color: lightskyblue;
+    font-family: "Rubik Doodle Shadow", sans-serif;
+    font-weight: 50;
+    overflow: hidden;
+}
+
+#flexContainer{
+    display: flex;
+    justify-content: center;
+    margin-bottom: 50px;
+}
+
+#newPostForm{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 20px;
+}
+
+#title, #message, #newPostForm{
+    width: 500px;
+}
+
+#title, #message, #submit{
+    margin-bottom: 10px;
+}
+
+#articleContainer{
+    left: 50%;
+}
+
+#editArea{
+    width: 950px;
+
+}
+
+#cardContainer{
+    display: flex;
+    justify-content: center;
+    perspective: 800px;
+}
+
+#card{
+    width: 260px;
+    height: 340px;
+    position: relative;
+    transition: transform 2500ms;
+    transform-style: preserve-3d;
+    box-shadow: -15px 15px 20px rgba(0, 0, 0, .50);
+}
+
+#pokemonOfTheDay{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: solid 5px #FDE767;
+    background-color: lightgreen;
+}
+
+#pokemonOfTheDay, #back{
+    border-radius: 7px;
+    backface-visibility: hidden;
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    box-shadow: 0, 0, 5px, 2px rgba(0, 0, 0, .50);
+}
+
+#pokemonName, #evolveContainer{
+    align-self: flex-start;
+    margin-left: 5px;
+    margin-bottom: 0;
+}
+
+#evolveFromImage{
+    float: left;
+    align-self: center;
+}
+
+#evolveFrom{
+    position: relative;
+    font-size: 12.5px;
+    align-self: center;
+    margin: 0;
+}
+
+#pokemonImage{
+    background-color: lightgray;
+    border-radius: 10px;
+    margin: 10px;
+}
+
+#evolveContainer{
+    display: inline-flex;
+    position: relative;
+    height: 50px;
+    left: 5px;
+    top: -1px;
+    margin: 0;
+    
+}
+
+#back{
+    background-image: url("/images/pokemonCard.jpg");
+    background-size: contain;
+    transform: rotateY(180deg);
+    
+}
+
+#temperature, #forecast{
+    margin-bottom: 5px;
+}
+
