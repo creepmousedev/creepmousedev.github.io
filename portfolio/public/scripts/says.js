@@ -137,10 +137,10 @@ function resetGame(){
 }
 
 function resetButtons(){
-    $('#greenButton').css("background-image", 'url(newGreenButton.png)');
-    $('#blueButton').css("background-image", 'url(newBlueButton.png)');
-    $('#yellowButton').css("background-image", 'url(newYellowButton.png)');
-    $('#redButton').css("background-image", 'url(newRedButton.png)');
+    $('#greenButton').css("background-image", 'url(images/saysImages/newGreenButton.png)');
+    $('#blueButton').css("background-image", 'url(images/saysImages/newBlueButton.png)');
+    $('#yellowButton').css("background-image", 'url(images/saysImages/newYellowButton.png)');
+    $('#redButton').css("background-image", 'url(images/saysImages/newRedButton.png)');
 }
 
 function setupButton(button, image, imagePressed, audioFile){
