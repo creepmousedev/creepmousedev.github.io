@@ -6,8 +6,8 @@ import methodOverrider from "method-override";
 import axios from "axios";
 import {createServer} from "http";
 import {Server} from "socket.io";
-//import { dirname } from "path";
-//import { fileURLToPath } from "url";
+import { dirname } from "path";
+import { fileURLToPath } from "url";
 import pg from "pg";
 import env from "dotenv";
 
@@ -15,7 +15,7 @@ const app = express();
 const server = createServer(app);
 const io = new Server(server);
 const port = process.env.PORT || 3000;
-//const __dirname = dirname(fileURLToPath(import.meta.url));
+const __dirname = dirname(fileURLToPath(import.meta.url));
 env.config();
 
 const db = new pg.Client({
@@ -356,15 +356,15 @@ app.get("/projects", (req, res) => {
 });
 
 app.get("/matchGame", (req, res) => {
-    res.sendFile("match.html");
+    res.sendFile(__dirname + "/public/match.html");
 });
 
 app.get("/says", (req, res) => {
-    res.sendFile("says.html");
+    res.sendFile(__dirname + "/public/says.html");
 });
 
 app.get("/tic-tac", (req, res) => {
-    res.sendFile("ticTac.html");
+    res.sendFile(__dirname + "/public/ticTac.html");
 });
 
 app.post("/submit", (req, res) => {
