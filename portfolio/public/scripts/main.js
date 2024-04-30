@@ -1,7 +1,6 @@
 const socket = io();
 let degrees = 0;
 
-
 navigator.geolocation.getCurrentPosition((position) => {
     if(position){
       console.log("got the stuff");
@@ -11,8 +10,8 @@ navigator.geolocation.getCurrentPosition((position) => {
     }
 });
 
-document.getElementById("card").addEventListener("pointerdown", () => {
-    
+document.getElementById("card").addEventListener("pointerdown", (event) => {
+    console.log(event);
     degrees += 360;
     document.getElementById("card").style.transform = `rotateY(${degrees+'deg'})`;
     setTimeout(() => {

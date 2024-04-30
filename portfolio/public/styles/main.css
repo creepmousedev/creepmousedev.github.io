@@ -5,7 +5,23 @@ body{
     background-color: lightskyblue;
     font-family: "Rubik Doodle Shadow", sans-serif;
     font-weight: 50;
-    overflow: hidden;
+}
+
+#topRow{
+    height: 50px;
+}
+
+/*BELOW IS FOR A FADE ZOOM OUT, WORK ON LATER*/
+/*.zoom{
+    animation: forwards;
+    animation-name: zoomOut;
+    animation-duration: .3s;
+}*/
+
+.zoom:hover{
+    animation: forwards;
+    animation-name: zoomIn;
+    animation-duration: .3s;
 }
 
 #flexContainer{
@@ -113,5 +129,38 @@ body{
 
 #temperature, #forecast{
     margin-bottom: 5px;
+}
+
+#profilePic{
+    box-shadow: -5px 5px 25px rgba(0, 0, 0, .65);
+}
+
+.carousel-item{
+    height: 600px;
+    border: solid 10px black;
+}
+
+.inGamePic{
+    float: right;
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+@keyframes zoomIn {
+    0%{
+        scale: 1;
+    }
+    100%{
+        scale: 1.25;
+    }
+}
+
+@keyframes zoomOut {
+    0%{
+        scale: 1.25;
+    }
+    100%{
+        scale: 1;
+    }
 }
 

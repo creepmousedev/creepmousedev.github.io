@@ -8,21 +8,41 @@ import {createServer} from "http";
 import {Server} from "socket.io";
 import { dirname } from "path";
 import { fileURLToPath } from "url";
+import pg from "pg";
+import env from "dotenv";
 
 const app = express();
 const server = createServer(app);
 const io = new Server(server);
 const port = process.env.PORT || 3000;
 const __dirname = dirname(fileURLToPath(import.meta.url));
+env.config();
+
+const db = new pg.Client({
+    user: process.env.PG_USER,
+    host: process.env.PG_HOST,
+    database: process.env.PG_DATABASE,
+    password: process.env.PG_PASSWORD,
+    port: process.env.PG_PORT,
+    ssl: true
+  });
+  
+db.connect();
 
 var playerOneName = "";
 var playerTwoName = "";
 var currentRoom = "";
 var arrayOfClients = [];
+var currentUser = "";
 
 function Client(name, room){
     this.name = name;
     this.room = room;
+}
+
+const weather = {
+    temp: "",
+    forecast: ""
 }
 
 const pokemonOfTheDay = {
@@ -257,50 +277,27 @@ app.get("/", async (req, res) => {
 
     await getCardInfo();
 
-    res.render("index.ejs", {theArray: articleArray, articlesActive: "active", aboutActive: "", contactActive: "", projectActive: "", 
-                                 image: pokemonOfTheDay.image,                                                                                      
-                                 name: pokemonOfTheDay.name,                                                                                      
-                                 type: pokemonOfTheDay.type,
-                                 evolvesFrom: pokemonOfTheDay.evolvesFrom,
-                                 evolveImage: pokemonOfTheDay.evolvesFromImage,
-                                 color: pokemonOfTheDay.color});
+    res.render("index.ejs", {currentUser: currentUser, articlesActive: "", aboutActive: "", contactActive: "", projectActive: "", 
+                             temp: weather.temp,
+                             forecast: weather.forecast});
     
 });
 
 app.post("/", async(req, res) => {
-
-    /*await getCardInfo();
-
-    res.render("index.ejs", {theArray: articleArray, articlesActive: "active", aboutActive: "", contactActive: "", projectActive: "",
-        image: pokemonOfTheDay.image,                                                                                      
-        name: pokemonOfTheDay.name,                                                                                      
-        type: pokemonOfTheDay.type,
-        evolvesFrom: pokemonOfTheDay.evolvesFrom,
-        evolveImage: pokemonOfTheDay.evolvesFromImage,
-        color: pokemonOfTheDay.color});*/
-
-
-    console.log(req.body.lat + " " + req.body.lon);
 
     try {
         const response = await axios.get(`https://api.weather.gov/points/${req.body.lat},${req.body.lon}`);
         const result = response.data;
         console.log(result.properties.forecastHourly);
         try{
-            const forecast = await axios.get(result.properties.forecastHourly);
-            console.log(forecast.data.properties.periods[0]);
-            console.log(forecast.data.properties.periods[0].temperature);
-            console.log(forecast.data.properties.periods[0].shortForecast);
+            const hourly = await axios.get(result.properties.forecastHourly);
+
+            weather.temp = hourly.data.properties.periods[0].temperature;
+            weather.forecast = hourly.data.properties.periods[0].shortForecast;
     
-            res.render("index.ejs", { theArray: articleArray, articlesActive: "active", aboutActive: "", contactActive: "", projectActive: "",
-                                                temp: forecast.data.properties.periods[0].temperature,
-                                                forecast: forecast.data.properties.periods[0].shortForecast,
-                                                image: pokemonOfTheDay.image,                                                                                      
-                                                name: pokemonOfTheDay.name,                                                                                      
-                                                type: pokemonOfTheDay.type,
-                                                evolvesFrom: pokemonOfTheDay.evolvesFrom,
-                                                evolveImage: pokemonOfTheDay.evolvesFromImage,
-                                                color: pokemonOfTheDay.color});
+            res.render("index.ejs", { currentUser: currentUser, articlesActive: "", aboutActive: "", contactActive: "", projectActive: "",
+                                      temp: weather.temp,
+                                      forecast: weather.forecast});
         } catch (error) {
             console.log(error);
         }
@@ -313,12 +310,8 @@ app.post("/", async(req, res) => {
 app.get("/articles", (req, res) => {
 
     res.render("index.ejs", {theArray: articleArray, articlesActive: "active", aboutActive: "", contactActive: "", projectActive: "",
-                             image: pokemonOfTheDay.image,
-                             name: pokemonOfTheDay.name,
-                             type: pokemonOfTheDay.type,
-                             evolvesFrom: pokemonOfTheDay.evolvesFrom,
-                             evolveImage: pokemonOfTheDay.evolvesFromImage,
-                             color: pokemonOfTheDay.color});
+                             temp: weather.temp,
+                             forecast: weather.forecast});
 });
 
 app.get("/articles/:id", (req, res) => {
@@ -326,12 +319,8 @@ app.get("/articles/:id", (req, res) => {
     if(!articleArray[req.params.id]){
         console.log("file not found");
         res.render("index.ejs", {theArray: articleArray, articlesActive: "active", aboutActive: "", contactActive: "", projectActive: "",
-                                 image: pokemonOfTheDay.image,                                                                                     
-                                 name: pokemonOfTheDay.name,
-                                 type: pokemonOfTheDay.type,
-                                 evolvesFrom: pokemonOfTheDay.evolvesFrom,
-                                 evolveImage: pokemonOfTheDay.evolvesFromImage,
-                                 color: pokemonOfTheDay.color});
+                                 temp: weather.temp,
+                                 forecast: weather.forecast});
     }
     else{
         fs.readFile(`./views/txtFiles/${articleArray[req.params.id].title}.txt`, 'utf8', (err, data) => {
@@ -347,17 +336,23 @@ app.get("/articles/:id", (req, res) => {
 });
 
 app.get("/about", (req, res) => {
-    res.render("about.ejs", {articlesActive: "", aboutActive: "active", contactActive: "", projectActive: ""});
+    res.render("about.ejs", {currentUser: currentUser, articlesActive: "", aboutActive: "active", contactActive: "", projectActive: "",
+                             temp: weather.temp,
+                             forecast: weather.forecast});
 });
 
 app.get("/contact", (req, res) => {
-    res.render("contact.ejs", {articlesActive: "", aboutActive: "", contactActive: "active", projectActive: ""});
+    res.render("contact.ejs", {currentUser: currentUser, articlesActive: "", aboutActive: "", contactActive: "active", projectActive: "",
+                               temp: weather.temp,
+                               forecast: weather.forecast});
 });
 
 app.get("/projects", (req, res) => {
 
 
-    res.render("projects.ejs", {articlesActive: "", aboutActive: "", contactActive: "", projectActive: "active"});
+    res.render("projects.ejs", {currentUser: currentUser, articlesActive: "", aboutActive: "", contactActive: "", projectActive: "active",
+                                temp: weather.temp,
+                                forecast: weather.forecast});
 });
 
 app.get("/matchGame", (req, res) => {
@@ -408,6 +403,49 @@ app.post("/submit", (req, res) => {
 
         });
     }
+});
+
+app.get("/signIn", (req, res) => {
+    res.render("signIn.ejs", {articlesActive: "", aboutActive: "", contactActive: "", projectActive: "",
+                              temp: weather.temp,
+                              forecast: weather.forecast});
+});
+
+app.post("/signIn", async(req, res) => {
+    let user = req.body.user.trim();
+    let data = await db.query('SELECT * FROM users');
+    data.rows.forEach((row) => {
+        if(user === row.user_name){
+            console.log(row.first_name + " found");
+            currentUser = row.user_name;
+            res.render("index.ejs", {currentUser: currentUser, articlesActive: "", aboutActive: "", contactActive: "", projectActive: "",
+                                     temp: weather.temp,
+                                     forecast: weather.forecast});
+        }
+        else{
+            console.log("user not in database");
+        }
+    });
+});
+
+app.post("/createUser", async(req, res) => {
+    let user = req.body.user.trim();
+    let firstName = req.body.firstName.trim();
+    let data = await db.query('SELECT * FROM users');
+    data.rows.forEach(async(row) => {
+        if(user === row.user_name){
+            console.log("user already exists");
+            
+        }
+        else{
+            console.log("user not in database");
+            await db.query('INSERT INTO users (user_name, first_name, is_admin) VALUES ($1, $2, $3)', [user, firstName, false]);
+            currentUser = user;
+            res.render("index.ejs", {currentUser: currentUser, articlesActive: "", aboutActive: "", contactActive: "", projectActive: "",
+                                     temp: weather.temp,
+                                     forecast: weather.forecast});
+        }
+    });
 });
 
 app.post("/newPost", (req, res) => {
