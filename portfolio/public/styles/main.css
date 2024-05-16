@@ -8,17 +8,22 @@ body{
 }
 
 #topRow{
-    height: 50px;
+    height: 65px;
+    margin-top: 20px;
+}
+
+#headerTitle{
+    margin: 0;
 }
 
 /*BELOW IS FOR A FADE ZOOM OUT, WORK ON LATER*/
-/*.zoom{
+.zoomOff{
     animation: forwards;
     animation-name: zoomOut;
     animation-duration: .3s;
-}*/
+}
 
-.zoom:hover{
+.zoom{
     animation: forwards;
     animation-name: zoomIn;
     animation-duration: .3s;
@@ -135,15 +140,25 @@ body{
     box-shadow: -5px 5px 25px rgba(0, 0, 0, .65);
 }
 
-.carousel-item{
-    height: 600px;
-    border: solid 10px black;
-}
-
 .inGamePic{
     float: right;
     background-size: contain;
     background-repeat: no-repeat;
+}
+
+#userContainer{
+    display: flex;
+    flex-direction: column;
+}
+
+#postContainer{
+    background-color: greenyellow;
+    height: 300px;
+    width: 300px;
+    border: 2px solid blue;
+    display: flex;
+    flex-direction: column;
+
 }
 
 @keyframes zoomIn {
@@ -161,6 +176,65 @@ body{
     }
     100%{
         scale: 1;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 991px){
+    #headerIcons{
+       scale: .85;
+    }
+
+    #headerTitle{
+        font-size: 2rem;
+    }
+
+    .signHeadings{
+        font-size: 1.25rem;
+    }
+}
+
+@media (min-width: 576px) and (max-width: 767px){
+    #headerTitle{
+        font-size: 1.5rem;
+    }
+
+    #headerIcons{
+        scale: .75;
+     }
+
+    .w-25{
+        width: 50% !important;
+    }
+}
+
+@media (min-width: 320px) and (max-width: 575px){
+    #headerTitle{
+        font-size: 1.35rem;
+        
+        
+    }
+
+    #nameAndLinks{
+        width: 160px !important;
+    }
+
+    #headerIcons{
+        scale: .55;
+        justify-content: center;
+     }
+
+     #temperature, #forecast, #time{
+        font-size: .85rem;
+        margin-left: 10px;
+     }
+
+     #signOnButton{
+        scale: .75;
+        margin-right: 20px;
+    }
+
+    .w-25{
+        width: 50% !important;
     }
 }
 
