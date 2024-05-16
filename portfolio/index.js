@@ -337,7 +337,7 @@ io.on('connection', async(socket) => {
 
     socket.on('get time', () => {
 
-        io.in(socket.id).emit('send time', (dateFormatter(Date.now(), "shortTime")));
+        io.in(socket.id).emit('send time', (dateFormatter(Date.now(), "h:MM tt Z")));
     });
     
     socket.on('get best', async(gameMode) => {
