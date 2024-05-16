@@ -1,3 +1,5 @@
+
+
 const socket = io();
 
 let sessionID = "";
@@ -33,7 +35,17 @@ function weather(){
 }
 
 function getTime(){
-    socket.emit('get time');
+    ////socket.emit('get time');
+    
+
+    //io.in(socket.id).emit('send time', (dateFormatter(Date.now(), "h:MM tt Z")));
+
+    //console.log(dateFormatter(Date.now(), "h:MM tt Z"));
+
+    let time = new Date(Date.now());
+    document.getElementById("time").innerText = time.toLocaleTimeString('en-US');
+    
+
     setTimeout(getTime, 1000);
 }
 
@@ -43,6 +55,7 @@ socket.on('send weather', (temp, forecast) => {
 });
 
 socket.on('send time', time => {
+    console.log(time);
     document.getElementById("time").innerText = time;
 });
 
