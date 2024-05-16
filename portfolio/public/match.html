@@ -14,9 +14,14 @@
 <body>
     <div id="header">
         <h1>Match Game!</h1>
-        <!--<p><a href="mailto:creepmousedev@gmail.com">Click here</a> to send any suggestions.</p>-->
+        <p class="timeDisplay">Find all the matches and beat your best time!</p>
+        <p class="timeDisplay" id="bestTime">Best Time: </p>
+        <div class="timeDisplay" id="timer">
+            <p class="numSize" id="minutes"> </p><p>:</p>
+            <p class="numSize" id="seconds"> </p><p>:</p>
+            <p class="numSize" id="milli"> </p>
+        </div>
     </div>
-
     <p id="playAgain"></p>
 
     <div id="buttonContainer">
@@ -166,6 +171,8 @@
             </div>
         </div>
     </div>
+    
+    <script src="/socket.io/socket.io.js"></script>
     <script src="/scripts/matchGame.js"></script>
 </body>
 </html>
