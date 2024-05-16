@@ -1,7 +1,7 @@
 <%- include("partials/header.ejs") %>
 
 <div id="flexContainer">
-    <% if(locals.newPost){ %>
+    <% if(locals.isAdmin){ %>
      <form action="/submit" method="post" id="newPostForm">
          <input type="text" name="title" id="title" placeholder="title">
          <textarea name="message" id="message" cols="30" rows="10" placeholder="message here"></textarea>
@@ -12,26 +12,24 @@
      </form>
     <% } %>
 </div>
-    <% if(locals.theArray){ %>  
-        <% for(let x=0; x<theArray.length; x++){ %>
-        
-        
-    <div class="col-md-6">
-      <div class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative" id="articleContainer">
-        <div class="col p-4 d-flex flex-column position-static">
-          <h3 class="mb-0"><%= JSON.stringify(theArray[x].title).replaceAll('"', '') %></h3>
-          <div class="mb-1 text-body-secondary"><%= JSON.stringify(theArray[x].date).replaceAll('"', '') %></div>
-          <p class="card-text mb-auto"><%= JSON.stringify(theArray[x].message).replaceAll('"', '').slice(0, 140) + "..." %></p>
-          <a href=<%= `/articles/${x}` %> class="icon-link gap-1 icon-link-hover stretched-link">
-            Continue reading
-            <svg class="bi"><use xlink:href="#chevron-right"></use></svg>
-          </a>
-        </div>
-        <div class="col-auto d-none d-lg-block">
-          <svg class="bd-placeholder-img" width="200" height="250" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#55595c"></rect><text x="50%" y="50%" fill="#eceeef" dy=".3em">Thumbnail</text></svg>
-        </div>
-      </div>
-    </div>
-    <% } %>
+
+<% if(locals.posts){ %>
+  <% posts.forEach((post) => { %>
+    <!--<div id="postContainer">
+      <p id="title"><%= post.title%></p>
+      <p id="date"><%= post.post_date %></p>
+      <p id="message"><%= post.message %></p>
+    </div>-->
+
+    <article class="blog-post">
+      <h2 class="display-5 link-body-emphasis mb-1"><%= post.title %></h2>
+      <p class="blog-post-meta"><%= post.post_date %></p>
+      <p><%= post.message %></p>
+      <hr>
+    </article>
+  <% }); %>
 <% } %>
-</div>
+
+
+
+<%- include("partials/footer.ejs") %>

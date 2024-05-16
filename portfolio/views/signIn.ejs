@@ -1,8 +1,8 @@
 <%- include("partials/header.ejs") %>
 
-<main class="form-signin w-100 m-auto">
-    <form action="/signIn" method="post">
-      <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
+<main class="form-signin w-25 m-auto">
+    <form class="d-flex flex-column" action="/signIn" method="post">
+      <h1 class="h3 mb-3 fw-normal signHeadings">Please sign in</h1>
   
       <div class="form-floating">
         <input type="user" class="form-control" id="floatingInput" name="user" placeholder="name@example.com">
@@ -19,14 +19,14 @@
           Remember me
         </label>
       </div>-->
-      <button class="btn btn-primary w-100 py-2" type="submit">Sign in</button>
+      <button class="btn btn-primary w-50 py-2 align-self-center" type="submit">Sign in</button>
     </form>
 
     <br>
     <hr>
     <br>
-    <form action="/createUser" method="post">
-        <h1 class="h3 mb-3 fw-normal">Create Account</h1>
+    <form class="d-flex flex-column" action="/createUser" method="post">
+        <h1 class="h3 mb-3 fw-normal signHeadings">Create Account</h1>
     
         <div class="form-floating">
           <input class="form-control" id="floatingInput" name="user" placeholder="name@example.com">
@@ -43,6 +43,8 @@
             Remember me
           </label>
         </div>-->
-        <button class="btn btn-primary w-100 py-2" type="submit">Create Account</button>
+        <button class="btn btn-primary w-50 py-2 align-self-center" type="submit">Create Account</button>
       </form>
 </main>
+
+<%- include("partials/footer.ejs") %>
