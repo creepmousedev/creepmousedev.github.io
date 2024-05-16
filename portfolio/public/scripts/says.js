@@ -1,3 +1,5 @@
+const socket = io();
+
 var clicks = 0;
 var degrees = 0;
 var currentLevel = 1;
@@ -8,14 +10,21 @@ var gameModeClassic = true;
 
 setupAllButtons();
 
-$("#normalButton").on("pointerdown", function(){
-    gameModeClassic = false;
-    playCpuArray();
-});
+$("#normalButton").on("pointerdown", startGame);
+$("#classicButton").on("pointerdown", startGame);
 
-$("#classicButton").on("pointerdown", function(){
-    gameModeClassic = true;
+function startGame (event){
+    
+    event.target.id === 'normalButton' ? gameModeClassic = false : gameModeClassic = true;
+    socket.emit('get high score', event.target.id);
     playCpuArray();
+}
+
+socket.on('send high score', (score) => {
+    console.log('receiving score');
+    console.log(typeof(score));
+    score === null ? highScore = 1 : highScore = score;
+    $("#highScore").text(`High Score: ${score}`);
 });
 
 function playCpuArray(){
@@ -117,6 +126,7 @@ function keepPlayingOrEndGame(buttonNumber){
         }
     }
     else{
+        socket.emit('says score', highScore, gameModeClassic);
         resetGame();
     }
 }
@@ -157,7 +167,6 @@ function setupButton(button, image, imagePressed, audioFile){
 }
 
 function setupAllButtons(){
-    console.log("hey");
     setupButton("#greenButton", "images/saysImages/newGreenButton.png", "images/saysImages/newGreenButtonhighlight.png", "sounds/saysSounds/green.mp3");
     setupButton("#blueButton", "images/saysImages/newBlueButton.png", "images/saysImages/newBlueButtonHighlight.png", "sounds/saysSounds/blue.mp3");
     setupButton("#yellowButton", "images/saysImages/newYellowButton.png", "images/saysImages/newYellowButtonHighlight.png", "sounds/saysSounds/yellow.mp3");

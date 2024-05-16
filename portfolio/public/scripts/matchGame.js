@@ -1,3 +1,5 @@
+const socket = io();
+
 var imageArray = ["images/matchImages/xbox.svg", "images/matchImages/tiktok.svg", "images/matchImages/playstation.svg", "images/matchImages/rocket-takeoff.svg", "images/matchImages/nintendo-switch.svg",
                   "images/matchImages/amd.svg", "images/matchImages/android2.svg", "images/matchImages/floppy.svg", "images/matchImages/gpu-card.svg", "/images/matchImages/music-player.svg"];
 var randomImageArray = [];
@@ -7,6 +9,10 @@ var idArray = [];
 var activeCardCount = 0;
 var numberOfMatches = 0;
 var gameMode = "";
+var start = new Date();
+var gameTimer;
+var gameTime;
+
 
 //ACTIVATES NORMAL AND HARD BUTTONS
 document.getElementById("normal").addEventListener('click', clickPlay);
@@ -55,7 +61,13 @@ function playScreenSetup(buttonID){
 
     if(buttonID === "normal"){
         console.log("normal clicked");
+        start = Date.now();
+        runTimer();
         gameMode = "normal";
+        socket.emit('get best', gameMode);
+        socket.on('send best time', (time) => {
+            document.getElementById("bestTime").innerText = `Best Time: ${time}`;
+        });
         
         if(y.matches){
             document.getElementById("gameContainer").style.gridTemplateColumns = "repeat(5, 65px)";
@@ -90,7 +102,13 @@ function playScreenSetup(buttonID){
     }
     else if(buttonID === "hard"){
         console.log("hard clicked");
+        start = Date.now();
+        runTimer();
         gameMode = "hard";
+        socket.emit('get best', gameMode);
+        socket.on('send best time', (time) => {
+            document.getElementById("bestTime").innerText = `Best Time: ${time}`;
+        });
 
         for(var x = 10; x < document.getElementsByClassName("card").length; x++){
             document.getElementById("num" + (x+1)).style.display = "block";
@@ -133,6 +151,10 @@ function playScreenSetup(buttonID){
 }
 
 function winScreen(){
+    clearTimeout(gameTimer);
+    let newTime = new Date(gameTime);
+    //console.log(newTime < start);
+    socket.emit('matches found', gameTime, gameMode);
     setTimeout(() => {
         document.querySelector("h1").innerHTML = "YOU WIN!!!!";
         playSound("sounds/winChime.mp3");
@@ -223,5 +245,14 @@ function imageClicked(){
         checkArray = [];
         activeCardCount = 0;
     }
+}
+
+function runTimer(){
+    gameTime = new Date(new Date(Date.now()) - start);
+    console.log(gameTime);
+    document.getElementById("minutes").innerText = gameTime.getMinutes();
+    document.getElementById("seconds").innerText = gameTime.getSeconds();
+    document.getElementById("milli").innerText = gameTime.getMilliseconds();
+    gameTimer = setTimeout(runTimer, 1);
 }
 

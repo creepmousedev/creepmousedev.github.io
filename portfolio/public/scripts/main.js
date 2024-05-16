@@ -1,41 +1,62 @@
 const socket = io();
-let degrees = 0;
 
-navigator.geolocation.getCurrentPosition((position) => {
-    if(position){
-      console.log("got the stuff");
-      document.getElementById("lat").value = position.coords.latitude;
-      document.getElementById("lon").value = position.coords.longitude;
-      document.forms["positionForm"].submit();
-    }
+let sessionID = "";
+
+console.log(window);
+console.log("new window");
+socket.emit('path name', window.location.pathname, sessionID);
+
+for(let x = 0; x < 4; x++){
+    document.getElementsByClassName("nav-item")[x].addEventListener("mouseover", () => {
+        document.getElementsByClassName("nav-item")[x].classList.remove("zoomOff");
+        document.getElementsByClassName("nav-item")[x].classList.add("zoom");
+    });
+}
+
+for(let x = 0; x < 4; x++){
+    document.getElementsByClassName("nav-item")[x].addEventListener("mouseleave", () => {
+        document.getElementsByClassName("nav-item")[x].classList.remove("zoom");
+        document.getElementsByClassName("nav-item")[x].classList.add("zoomOff");
+    });
+}
+
+weather();
+getTime();
+
+function weather(){
+    navigator.geolocation.getCurrentPosition((position) => {
+        if(position){
+        socket.emit('send position', position.coords.latitude, position.coords.longitude);
+        setTimeout(weather, 1800000);
+        }
+    });
+}
+
+function getTime(){
+    socket.emit('get time');
+    setTimeout(getTime, 1000);
+}
+
+socket.on('send weather', (temp, forecast) => {
+    document.getElementById("temperature").innerText = temp + '°F';
+    document.getElementById("forecast").innerText = forecast;
 });
 
-document.getElementById("card").addEventListener("pointerdown", (event) => {
-    console.log(event);
-    degrees += 360;
-    document.getElementById("card").style.transform = `rotateY(${degrees+'deg'})`;
-    setTimeout(() => {
-        
-        socket.emit('newCard');
-        
-    }, 500);
+socket.on('send time', time => {
+    document.getElementById("time").innerText = time;
 });
 
-socket.on('newCard', (image, name, type, evolveImage, evolvesFrom, color) => {
-    document.getElementById("pokemonImage").setAttribute('src', `${image}`);
-    document.getElementById("pokemonName").innerText = name;
-    document.getElementById("pokemonType").innerText = `${type} type`;
-    document.getElementById("pokemonOfTheDay").setAttribute('style', `background-color:${color}`);
-    if(evolvesFrom === "Basic"){
-        document.getElementById("evolveFrom").innerText = "Basic";
-        document.getElementById("evolveFromImage").setAttribute('src', "");
+socket.on('send session id', (id) => {
+    
+    if(sessionID === ""){
+        sessionID = id;
+        console.log("hello");
         
     }
     else{
-        document.getElementById("evolveFrom").innerText = `Evolves from ${evolvesFrom}`;
-        document.getElementById("evolveFromImage").setAttribute('src', `${evolveImage}`);
+        console.log("session already assigned");
         
     }
-    
-    
+
+    console.log(sessionID);
 });
