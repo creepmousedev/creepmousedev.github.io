@@ -3,9 +3,11 @@
 <main class="form-signin w-25 m-auto">
     <form class="d-flex flex-column" action="/signIn" method="post">
       <h1 class="h3 mb-3 fw-normal signHeadings">Please sign in</h1>
-  
+      <% if(locals.signInMessage){ %>
+        <p class="signInMessage"><%= signInMessage %></p>
+      <% } %>
       <div class="form-floating">
-        <input type="user" class="form-control" id="floatingInput" name="user" placeholder="name@example.com">
+        <input type="user" class="form-control" id="floatingInput" name="userLogin" placeholder="name@example.com" required minlength="3" maxlength="15">
         <label for="floatingInput">User Name</label>
       </div>
       <!--<div class="form-floating">
@@ -27,13 +29,15 @@
     <br>
     <form class="d-flex flex-column" action="/createUser" method="post">
         <h1 class="h3 mb-3 fw-normal signHeadings">Create Account</h1>
-    
+        <% if(locals.createMessage){ %>
+          <p class="signInMessage"><%= createMessage %></p>
+        <% } %>
         <div class="form-floating">
-          <input class="form-control" id="floatingInput" name="user" placeholder="name@example.com">
+          <input class="form-control" id="floatingInput" name="user" placeholder="name@example.com" required minlength="3" maxlength="15">
           <label for="floatingInput">User Name</label>
         </div>
         <div class="form-floating">
-          <input class="form-control" id="floatingPassword" name="firstName" placeholder="Password">
+          <input class="form-control" id="floatingPassword" name="firstName" placeholder="Password" required minlength="3" maxlength="15">
           <label for="floatingPassword">First Name</label>
         </div>
     
