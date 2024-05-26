@@ -1,12 +1,5 @@
 
-
 const socket = io();
-
-let sessionID = "";
-
-console.log(window);
-console.log("new window");
-socket.emit('path name', window.location.pathname, sessionID);
 
 for(let x = 0; x < 4; x++){
     document.getElementsByClassName("nav-item")[x].addEventListener("mouseover", () => {
@@ -35,18 +28,10 @@ function weather(){
 }
 
 function getTime(){
-    ////socket.emit('get time');
-    
-
-    //io.in(socket.id).emit('send time', (dateFormatter(Date.now(), "h:MM tt Z")));
-
-    //console.log(dateFormatter(Date.now(), "h:MM tt Z"));
 
     let time = new Date(Date.now());
     document.getElementById("time").innerText = time.toLocaleTimeString('en-US');
-    
-
-    setTimeout(getTime, 1000);
+    setTimeout(getTime, 1);
 }
 
 socket.on('send weather', (temp, forecast) => {
@@ -54,22 +39,18 @@ socket.on('send weather', (temp, forecast) => {
     document.getElementById("forecast").innerText = forecast;
 });
 
-socket.on('send time', time => {
-    console.log(time);
-    document.getElementById("time").innerText = time;
-});
-
-socket.on('send session id', (id) => {
+socket.on('send session id', (id, callback) => {
     
-    if(sessionID === ""){
-        sessionID = id;
-        console.log("hello");
-        
+    console.log("checking for cookie " + id);
+    if(!document.cookie){
+        document.cookie = `session_id=${id}`;
+        console.log(document.cookie);
+        callback('cookie created')
     }
     else{
-        console.log("session already assigned");
-        
+        console.log('yum yum');
+        console.log(document.cookie.split('=')[1]);
+        callback(document.cookie.split('=')[1])
     }
-
-    console.log(sessionID);
+    
 });

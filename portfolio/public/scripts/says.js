@@ -16,7 +16,7 @@ $("#classicButton").on("pointerdown", startGame);
 function startGame (event){
     
     event.target.id === 'normalButton' ? gameModeClassic = false : gameModeClassic = true;
-    socket.emit('get high score', event.target.id);
+    socket.emit('get high score', event.target.id, document.cookie.split('=')[1]);
     playCpuArray();
 }
 
@@ -126,7 +126,7 @@ function keepPlayingOrEndGame(buttonNumber){
         }
     }
     else{
-        socket.emit('says score', highScore, gameModeClassic);
+        socket.emit('says score', highScore, gameModeClassic, document.cookie.split('=')[1]);
         resetGame();
     }
 }

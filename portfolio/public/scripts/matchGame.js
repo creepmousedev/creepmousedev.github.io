@@ -64,7 +64,7 @@ function playScreenSetup(buttonID){
         start = Date.now();
         runTimer();
         gameMode = "normal";
-        socket.emit('get best', gameMode);
+        socket.emit('get best', gameMode, document.cookie.split('=')[1]);
         socket.on('send best time', (time) => {
             document.getElementById("bestTime").innerText = `Best Time: ${time}`;
         });
@@ -105,7 +105,7 @@ function playScreenSetup(buttonID){
         start = Date.now();
         runTimer();
         gameMode = "hard";
-        socket.emit('get best', gameMode);
+        socket.emit('get best', gameMode, document.cookie.split('=')[1]);
         socket.on('send best time', (time) => {
             document.getElementById("bestTime").innerText = `Best Time: ${time}`;
         });
@@ -154,7 +154,7 @@ function winScreen(){
     clearTimeout(gameTimer);
     let newTime = new Date(gameTime);
     //console.log(newTime < start);
-    socket.emit('matches found', gameTime, gameMode);
+    socket.emit('matches found', gameTime, gameMode, document.cookie.split('=')[1]);
     setTimeout(() => {
         document.querySelector("h1").innerHTML = "YOU WIN!!!!";
         playSound("sounds/winChime.mp3");
