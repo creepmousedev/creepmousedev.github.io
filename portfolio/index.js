@@ -9,6 +9,7 @@ import { dirname } from "path";
 import { fileURLToPath } from "url";
 import pg from "pg";
 import env from "dotenv";
+import cookieParser from "cookie-parser";
 
 const app = express();
 const server = createServer(app);
@@ -33,9 +34,6 @@ let playerTwoName = "";
 let currentRoom = "";
 let arrayOfClients = [];
 let connectedUsers = []; //ONLY HOLD THE USERNAME AND USE THIS TO CONFIRM THAT A USER ISN'T LOGGED IN TWICE
-let roomNumber = 0;
-let pathNameArray = [];
-let afterSignIn = "";
 
 function Client(name, room){
     this.name = name;
@@ -47,15 +45,6 @@ const weather = {
     forecast: ""
 }
 
-const currentUser = {
-    user: "",
-    isAdmin: false,
-    id: 0,
-    pathNameArray: [], //DOES THIS GO IN THE CURRENT USER OBJECT?
-    afterSignIn: "", //DOES THIS GO IN THE CURRENT USER OBJECT?
-    sessionID: ""
-}
-
 const pokemonOfTheDay = {
     name: "",
     evolvesFrom: "",
@@ -65,24 +54,52 @@ const pokemonOfTheDay = {
     evolvesFromImage: ""
 }
 
-let articleArray = [];
-let usedPokemon = [];
-
 app.use(express.static("public"));
 app.use(methodOverrider("_method"));
 app.use(bodyParser.urlencoded({extended: true}));
+app.use(cookieParser());
+app.use(trackPath);
 
-app.use((req, res, next) => {
-
-    let currentTime = dateFormatter(Date.now(), "shortTime");
-    res.locals.currentTime = currentTime;
-
+function trackPath(req, res, next){
+    
+    connectedUsers.forEach((user) => {
+        if(user.sessionID === req.cookies['session_id'] && req.url !== '/signIn' && req.url !== '/createUser' && req.url !== '/signOut'){
+            //req.url === '/' ? user.afterSignIn = '/' : user.afterSignIn = req.url.replace('/', '') + '.ejs';
+            user.afterSignIn = req.url;
+        }
+    });
     next();
-});
+}
 
-/*app.param("id", (req, res, next, value) => {
-    next();
-});*/
+function getUser(req, session){
+
+    let message;
+    connectedUsers.forEach((user) => {
+        if(req === ""){
+            console.log('start');
+            console.log(user);
+            console.log(session);
+            console.log('end');
+            if(user.sessionID === session){
+                console.log(`hello there`);
+                message = user.id;
+            }
+        }
+        else{
+            if(user.sessionID === req.cookies['session_id']){
+                if(user.user !== ""){
+                    message = user.user;
+                }
+                else{
+                    message = "user not found in database";
+                }
+            }
+        }
+        
+    });
+    
+    return message;
+}
 
 async function getCardInfo(){
     try {
@@ -176,26 +193,56 @@ async function getCardInfo(){
       }
 }
 
-function arcadeGate(game, res){
-    if(currentUser.user === ""){
-        res.render("signIn.ejs", {articlesActive: "", aboutActive: "", arcadeActive: "active", projectActive: "",
+function arcadeGate(game, req, res){
+
+    //let currentUser = "";
+    connectedUsers.forEach((user) => {
+        if(user.sessionID === req.cookies['session_id']){
+            if(user.user !== ""){
+                //currentUser = user.user;
+                res.sendFile(__dirname + `/public/${game}`);
+            }
+            else{
+                res.render("signIn.ejs", {articlesActive: "", aboutActive: "", arcadeActive: "active", projectActive: "",
                               temp: weather.temp,
                               forecast: weather.forecast});
-    }
-    else{
-        res.sendFile(__dirname + `/public/${game}`);
-    }
+            }
+        }
+    });
+
 }
 
 io.on('connection', async(socket) => {
-
-    socket.emit('send session id', socket.id);
-    console.log(socket.id);
-    //USE CALLBACK FUNCTION HERE
-    //DOES MAINJS ALREADY HAVE A SOCKET ID??
-    //IF IT DOES HAVE, DOES THE ID MATCH WHAT WAS SENT OR NO REASON TO PUSH THAT CURRENTUSER INTO THE CONNECTEDUSERS ARRAY
-    //IF NOT, ASSIGN THE ID ON MAIN TO THIS SOCKET.ID AND THEN ASSIGN IT TO THE CURRENTUSER.SESSIONID AND PUSH INTO THE CONNECTED ARRAY
     
+    socket.emit('send session id', socket.id, (callback) => {
+        console.log('getting cookie stuff');
+        const currentUser = {
+            user: "",
+            isAdmin: false,
+            id: 0,
+            afterSignIn: "",
+            sessionID: ""
+        }
+        console.log(connectedUsers.length);
+        if(connectedUsers.length === 0){
+            connectedUsers.push(currentUser);
+        }
+
+        if(callback === 'cookie created'){
+            console.log('time to make the donuts');
+            currentUser.sessionID = socket.id;
+            connectedUsers.push(currentUser);
+            
+        } else{
+            currentUser.sessionID = callback;
+            let timesInArray = 0;
+            connectedUsers.forEach((user) => {
+                user.sessionID === callback ? timesInArray++ : console.log('no need to count');
+            });
+            timesInArray > 0 ? console.log('session in array') : connectedUsers.push(currentUser);
+            
+        } 
+    });
 
     //NOT SURE IF THE BELOW IS USED OR NOT, BUT GOTTA CLEAN UP
     /*if(playerOneName){
@@ -258,7 +305,7 @@ io.on('connection', async(socket) => {
 
     socket.on('disconnecting', () => {
         
-        
+
         let rooms = socket.rooms;
 
         arrayOfClients.forEach((client) => {
@@ -285,17 +332,12 @@ io.on('connection', async(socket) => {
                 }
             });
 
-        });
-        //console.log(socket.rooms);
-        console.log(arrayOfClients);
-        
-        
+        });        
 
     });
 
     socket.on('disconnect', (reason) => {
         socket.emit('left message');
-        
         
     });
 
@@ -313,7 +355,7 @@ io.on('connection', async(socket) => {
         io.in(socket.id).emit('newCard', image, name, type, evolveImage, evolvesFrom, color);
     });
 
-    //FUNCTIONS BELOW ARE FOR GETTING WEATHER AND TIME
+    //FUNCTIONS BELOW ARE FOR GETTING WEATHER
     socket.on('send position', async(lat, lon) => {
         try {
             const response = await axios.get(`https://api.weather.gov/points/${lat},${lon}`);
@@ -334,15 +376,12 @@ io.on('connection', async(socket) => {
             console.error("Failed to make request:", error.message);
         }
     });
-
-    socket.on('get time', () => {
-
-        io.in(socket.id).emit('send time', (dateFormatter(Date.now(), "h:MM tt Z")));
-    });
     
-    socket.on('get best', async(gameMode) => {
+    socket.on('get best', async(gameMode, sessionID) => {
+
+        let currentUser = getUser("", sessionID);
         let bestTime;
-        let data = await db.query(`SELECT * FROM game_scores WHERE ${currentUser.id} = player_id AND game_title = 'Match Game'`);
+        let data = await db.query(`SELECT * FROM game_scores WHERE ${currentUser} = player_id AND game_title = 'Match Game'`);
         if(data.rows.length === 1){
             gameMode === 'normal' ? bestTime = data.rows[0].best_match_time_normal : bestTime = data.rows[0].best_match_time_hard;
             bestTime === null ? bestTime = 0 : console.log('score ok');
@@ -369,21 +408,22 @@ io.on('connection', async(socket) => {
         }
     });
 
-    socket.on('matches found', async(bestTime, gameMode) => {
+    socket.on('matches found', async(bestTime, gameMode, sessionID) => {
+        let currentUser = getUser("", sessionID);
         let time = new Date(bestTime).getTime();
         try{
-            let data = await db.query(`SELECT * FROM game_scores WHERE ${currentUser.id} = player_id AND game_title = 'Match Game'`);
+            let data = await db.query(`SELECT * FROM game_scores WHERE ${currentUser} = player_id AND game_title = 'Match Game'`);
             if(data.rows.length === 0){
                 let score = gameMode === 'normal' ? 'best_match_time_normal' : 'best_match_time_hard';
-                await db.query(`INSERT INTO game_scores (game_title, ${score}, player_id) VALUES ($1, $2, $3)`, ['Match Game', time, currentUser.id]);
+                await db.query(`INSERT INTO game_scores (game_title, ${score}, player_id) VALUES ($1, $2, $3)`, ['Match Game', time, currentUser]);
             }
             else if(data.rows.length === 1){
                 data.rows.forEach(async(row) => {
                     if(gameMode === 'normal'){
-                        time < row.best_match_time_normal || row.best_match_time_normal === null ? await db.query(`UPDATE game_scores SET best_match_time_normal = $1 WHERE game_title = 'Match Game' AND player_id = ${currentUser.id}`, [time]) : console.log("didn't beat time");
+                        time < row.best_match_time_normal || row.best_match_time_normal === null ? await db.query(`UPDATE game_scores SET best_match_time_normal = $1 WHERE game_title = 'Match Game' AND player_id = ${currentUser}`, [time]) : console.log("didn't beat time");
                     }
                     else{
-                        time < row.best_match_time_hard || row.best_match_time_hard === null ? await db.query(`UPDATE game_scores SET best_match_time_hard = $1 WHERE game_title = 'Match Game' AND player_id = ${currentUser.id}`, [time]) : console.log("didn't beat time");
+                        time < row.best_match_time_hard || row.best_match_time_hard === null ? await db.query(`UPDATE game_scores SET best_match_time_hard = $1 WHERE game_title = 'Match Game' AND player_id = ${currentUser}`, [time]) : console.log("didn't beat time");
                     }
                 });
             }
@@ -392,10 +432,11 @@ io.on('connection', async(socket) => {
         }
     });
 
-    socket.on('get high score', async(gameMode) => {
+    socket.on('get high score', async(gameMode, sessionID) => {
+        let currentUser = getUser("", sessionID);
         let highScore = 0;
-
-        let data = await db.query(`SELECT * FROM game_scores WHERE ${currentUser.id} = player_id AND game_title = 'Adam Says...'`);
+        console.log(`user: ${currentUser}`);
+        let data = await db.query(`SELECT * FROM game_scores WHERE ${currentUser} = player_id AND game_title = 'Adam Says...'`);
         if(data.rows.length === 1){
             gameMode === 'normalButton' ? highScore = data.rows[0].high_score_normal : highScore = data.rows[0].high_score_classic;
             highScore === null ? highScore = 1 : console.log('score ok');
@@ -406,21 +447,22 @@ io.on('connection', async(socket) => {
         }
     });
 
-    socket.on('says score', async(highScore, gameModeClassic) => {
+    socket.on('says score', async(highScore, gameModeClassic, sessionID) => {
+        let currentUser = getUser("", sessionID);
         //FIRST COMPARE THE CURRENT HIGH SCHOOL OR IF IT EXISTS TO THE HIGHSCORE THAT WAS JUST SENT
         try{
-            let data = await db.query(`SELECT * FROM game_scores WHERE ${currentUser.id} = player_id AND game_title = 'Adam Says...'`);
+            let data = await db.query(`SELECT * FROM game_scores WHERE ${currentUser} = player_id AND game_title = 'Adam Says...'`);
             if(data.rows.length === 0){
                 let score = gameModeClassic === false ? 'high_score_normal' : 'high_score_classic';
-                await db.query(`INSERT INTO game_scores (game_title, ${score}, player_id) VALUES ($1, $2, $3)`, ['Adam Says...', highScore, currentUser.id]);
+                await db.query(`INSERT INTO game_scores (game_title, ${score}, player_id) VALUES ($1, $2, $3)`, ['Adam Says...', highScore, currentUser]);
             }
             else if(data.rows.length === 1){
                 data.rows.forEach(async(row) => {
                         if(gameModeClassic === false){
-                            highScore > row.high_score_normal ? await db.query(`UPDATE game_scores SET high_score_normal = $1 WHERE game_title = 'Adam Says...' AND player_id = ${currentUser.id}`, [highScore]) : console.log("no high score");
+                            highScore > row.high_score_normal ? await db.query(`UPDATE game_scores SET high_score_normal = $1 WHERE game_title = 'Adam Says...' AND player_id = ${currentUser}`, [highScore]) : console.log("no high score");
                         }
                         else{
-                            highScore > row.high_score_classic ? await db.query(`UPDATE game_scores SET high_score_classic = $1 WHERE game_title = 'Adam Says...' AND player_id = ${currentUser.id}`, [highScore]) : console.log("no high score");
+                            highScore > row.high_score_classic ? await db.query(`UPDATE game_scores SET high_score_classic = $1 WHERE game_title = 'Adam Says...' AND player_id = ${currentUser}`, [highScore]) : console.log("no high score");
                         }
                 });
             }
@@ -433,49 +475,21 @@ io.on('connection', async(socket) => {
         
     });
 
-    socket.on('path name', (path, sessionID) => {
-    
-        socket.emit('save path', path, sessionID);
-        
-
-    });
-
-    socket.on('save path', (path, sessionID) => {
-
-        connectedUsers.forEach((user) => {
-            if(user.sessionID === sessionID){
-                if(path === '/signIn'){
-                    user.afterSignIn = user.pathNameArray[user.pathNameArray.length-1].replace('/', '') + '.ejs';
-                    console.log(afterSignIn);
-                    user.afterSignIn === '.ejs' ? user.afterSignIn = 'arcade.ejs' : console.log('no change needed');
-                }
-                else{
-                    user.pathNameArray.push(path);
-                    console.log(user.pathNameArray);
-                }
-            }
-        });
-    });
-
 });
-
 
 app.get("/", async(req, res) => {
 
-    /*res.render("blog.ejs", {currentUser: currentUser.user, articlesActive: "active", aboutActive: "", arcadeActive: "", projectActive: "", 
-                             temp: weather.temp,
-                             forecast: weather.forecast,
-                             currentTime: res.locals.currentTime});*/
+    let currentUser;
+    getUser(req) === "user not found in database" ? currentUser = "" : currentUser = getUser(req);
     
     try{
         let data = await db.query('SELECT * FROM blog_posts JOIN users ON users.id = user_id');
         console.log(data.rows);
-        res.render("blog.ejs", {articlesActive: "active", aboutActive: "", arcadeActive: "", projectActive: "",
+        res.render("blog.ejs", {currentUser: currentUser, articlesActive: "active", aboutActive: "", arcadeActive: "", projectActive: "",
                                  temp: weather.temp,
                                  forecast: weather.forecast,
-                                 posts: data.rows,
-                                 currentUser: currentUser.user,
-                                 isAdmin: currentUser.isAdmin});
+                                 posts: data.rows
+                                 });
     } catch (error) {
         console.log(error);
     }
@@ -484,42 +498,21 @@ app.get("/", async(req, res) => {
 
 app.get("/blog", async(req, res) => {
 
+    let currentUser;
+    getUser(req) === "user not found in database" ? currentUser = "" : currentUser = getUser(req);
+
     try{
         let data = await db.query('SELECT * FROM blog_posts JOIN users ON users.id = user_id');
         console.log(data.rows);
-        res.render("blog.ejs", {articlesActive: "active", aboutActive: "", arcadeActive: "", projectActive: "",
+        res.render("blog.ejs", {currentUser: currentUser, articlesActive: "active", aboutActive: "", arcadeActive: "", projectActive: "",
                                  temp: weather.temp,
                                  forecast: weather.forecast,
-                                 posts: data.rows,
-                                 currentUser: currentUser.user,
-                                 isAdmin: currentUser.isAdmin});
+                                 posts: data.rows});
         } catch (error) {
             console.log(error);
     }
 
 });
-
-/*app.get("/articles/:id", (req, res) => {
-    console.log("i was called");
-    if(!articleArray[req.params.id]){
-        console.log("file not found");
-        res.render("index.ejs", {theArray: articleArray, articlesActive: "active", aboutActive: "", arcadeActive: "", projectActive: "",
-                                 temp: weather.temp,
-                                 forecast: weather.forecast,
-                                 currentUser: currentUser.user});
-    }
-    else{
-        fs.readFile(`./views/txtFiles/${articleArray[req.params.id].title}.txt`, 'utf8', (err, data) => {
-            if (err) throw err;
-            console.log(data);
-            res.render("postDisplay.ejs", {titleFromFile: articleArray[req.params.id].title, 
-                                          messageFromFile: data,
-                                          postNumber: req.params.id, 
-                                          dateFromFile: articleArray[req.params.id].date,
-                                          articlesActive: "active", aboutActive: "", arcadeActive: "", projectActive: ""});
-        });
-    }
-});*/
 
 app.post("/submit", async(req, res) => {
 
@@ -532,7 +525,7 @@ app.post("/submit", async(req, res) => {
         try {
             await db.query('INSERT INTO blog_posts (message, user_id, post_date, title) VALUES ($1, $2, $3, $4)', [req.body.message, currentUser.id, dateFormatter(Date.now(), 'fullDate'), req.body.title]);
             let data = await db.query('SELECT * FROM blog_posts JOIN users ON users.id = user_id');
-            res.render("blog.ejs", {currentUser: currentUser.user, articlesActive: "active", aboutActive: "", arcadeActive: "", projectActive: "",
+            res.render("blog.ejs", {articlesActive: "active", aboutActive: "", arcadeActive: "", projectActive: "",
                                      temp: weather.temp,
                                      forecast: weather.forecast,
                                      posts: data.rows});
@@ -543,21 +536,33 @@ app.post("/submit", async(req, res) => {
 });
 
 app.get("/about", (req, res) => {
-    res.render("about.ejs", {currentUser: currentUser.user, articlesActive: "", aboutActive: "active", arcadeActive: "", projectActive: "",
+    
+    let currentUser;
+    getUser(req) === "user not found in database" ? currentUser = "" : currentUser = getUser(req).user;
+
+    res.render("about.ejs", {currentUser: currentUser, articlesActive: "", aboutActive: "active", arcadeActive: "", projectActive: "",
                              temp: weather.temp,
-                             forecast: weather.forecast});
+                             forecast: weather.forecast,
+                            test: true});
 });
 
 app.get("/arcade", (req, res) => {
-    res.render("arcade.ejs", {currentUser: currentUser.user, articlesActive: "", aboutActive: "", arcadeActive: "active", projectActive: "",
+    
+    let currentUser;
+    getUser(req) === "user not found in database" ? currentUser = "" : currentUser = getUser(req);
+
+    res.render("arcade.ejs", {currentUser: currentUser, articlesActive: "", aboutActive: "", arcadeActive: "active", projectActive: "",
                                temp: weather.temp,
                                forecast: weather.forecast});
 });
 
 app.get("/projects", async(req, res) => {
 
+    let currentUser;
+    getUser(req) === "user not found in database" ? currentUser = "" : currentUser = getUser(req);
+
     await getCardInfo();
-    res.render("projects.ejs", {currentUser: currentUser.user, articlesActive: "", aboutActive: "", arcadeActive: "", projectActive: "active",
+    res.render("projects.ejs", {currentUser: currentUser, articlesActive: "", aboutActive: "", arcadeActive: "", projectActive: "active",
                                 temp: weather.temp,
                                 forecast: weather.forecast,
                                 image: pokemonOfTheDay.image,
@@ -569,15 +574,15 @@ app.get("/projects", async(req, res) => {
 });
 
 app.get("/matchGame", (req, res) => {
-    arcadeGate('match.html', res);
+    arcadeGate('match.html', req, res);
 });
 
 app.get("/says", (req, res) => {
-    arcadeGate('says.html', res);
+    arcadeGate('says.html', req, res);
 });
 
 app.get("/tic-tac", (req, res) => {
-    arcadeGate('ticTac.html', res);
+    arcadeGate('ticTac.html', req, res);
 });
 
 app.get("/signIn", (req, res) => {
@@ -588,69 +593,113 @@ app.get("/signIn", (req, res) => {
 });
 
 app.get("/signOut", (req, res) => {
-    currentUser.user = "";
-    currentUser.isAdmin = false;
 
-    res.render("index.ejs", {articlesActive: "", aboutActive: "", arcadeActive: "", projectActive: "",
+    let afterSignOut;
+    connectedUsers.forEach((user) => {
+        if(user.sessionID === req.cookies['session_id']){
+            user.user = "";
+            user.isAdmin = false;
+            user.id = 0;
+            console.log(user.afterSignIn);
+            afterSignOut = user.afterSignIn.replace('/', '') + '.ejs';
+            console.log(afterSignOut);
+                        //req.url === '/' ? user.afterSignIn = '/' : user.afterSignIn = req.url.replace('/', '') + '.ejs';
+
+        }
+    });
+
+    res.render(afterSignOut, {articlesActive: "", aboutActive: "", arcadeActive: "", projectActive: "",
     temp: weather.temp,
     forecast: weather.forecast,
     });
 });
 
 app.post("/signIn", async(req, res) => {
-    let user = req.body.user.trim();
+    let userName = req.body.userLogin.trim();
+    let timesLoggedIn = 0;
+    let message = "";
     
     try{
         let data = await db.query('SELECT * FROM users');
         data.rows.forEach((row) => {
-            if(user === row.user_name){
-                console.log(row.first_name + " found");
-                const user = Object.create(currentUser);
-                currentUser.user = row.user_name;
-                currentUser.isAdmin = row.is_admin;
-                currentUser.id = row.id;
+            if(userName === row.user_name){
+                connectedUsers.forEach((user) => {
 
-                connectedUsers.push(user);
-                console.log(connectedUsers);
-                //IF STATEMENT HERE FOR IF ITS BLOG OR PROJECTS CAUSE WE NEED TO QUERY DB AND DISPLAY RIGHT STUFF
-                res.render('signIn.ejs', {currentUser: currentUser.user, articlesActive: "", aboutActive: "", arcadeActive: "", projectActive: "",
-                                         temp: weather.temp,
-                                         forecast: weather.forecast,
-                                         signedIn: true});
+                    connectedUsers.forEach((person) => {
+                        if(person.user === row.user_name){
+                            timesLoggedIn++;
+                        }
+                    });
+                    
+                    if(timesLoggedIn > 0){
+                        message = "User is already logged in"
+                    } 
+                    else{
+                        if(user.sessionID === req.cookies['session_id']){
+                            user.user = row.user_name;
+                            user.isAdmin = row.is_admin;
+                            user.id = row.id;
+                            res.redirect(user.afterSignIn);
+                        }
+                    }
+                });
             }
             else{
-                console.log("user not in database");
+                if(timesLoggedIn === 0){
+                    message = "User not found. Create account below:";
+                }
             }
+            
         });
     } catch (error) {
         console.log(error);
     }
+    res.render("signIn.ejs", {articlesActive: "", aboutActive: "", arcadeActive: "", projectActive: "",
+                                                  temp: weather.temp,
+                                                  forecast: weather.forecast,
+                                                  signInMessage: message});
 });
 
 app.post("/createUser", async(req, res) => {
     let user = req.body.user.trim();
     let firstName = req.body.firstName.trim();
-    let data = await db.query('SELECT * FROM users');
-    data.rows.forEach(async(row) => {
-        if(user === row.user_name){
-            console.log("user already exists");
-            
-        }
-        else{
-            console.log("user not in database");
-            try {
-            await db.query('INSERT INTO users (user_name, first_name, is_admin) VALUES ($1, $2, $3)', [user, firstName, false]);
-            currentUser.user = user;
-            currentUser.isAdmin = false;
-            res.render("index.ejs", {currentUser: currentUser.user, articlesActive: "", aboutActive: "", arcadeActive: "", projectActive: "",
+    let message = "";
+    
+    if(user === "" || firstName === ""){
+        console.log("please enter user and first name");
+        message = "Please enter both User Name and First Name:";
+    }
+    else{
+        let data = await db.query('SELECT * FROM users');
+        data.rows.forEach(async(row) => {
+            if(user === row.user_name){
+                console.log("user already exists");
+                
+                res.render("signIn.ejs", {articlesActive: "", aboutActive: "", arcadeActive: "", projectActive: "",
                                      temp: weather.temp,
-                                     forecast: weather.forecast});
-            } catch (error) {
-                console.log(error);
+                                     forecast: weather.forecast,
+                                     createMessage: "User Name already exists. Please try another."});
             }
+        });
+
+        try {
+            let returnData = await db.query('INSERT INTO users (user_name, first_name, is_admin) VALUES ($1, $2, $3) RETURNING *', [user, firstName, false]);
+            returnData.rows.forEach((row) => {
+                connectedUsers.forEach((user) => {
+                    if(user.sessionID === req.cookies['session_id']){
+                        user.user = row.user_name;
+                        user.isAdmin = row.is_admin;
+                        user.id = row.id;
+                        res.redirect(user.afterSignIn);
+                    }                
+                });
+            });
+        } catch (error) {
+            console.log(error);
         }
-    });
+    }    
 });
+
 
 app.post("/newPost", (req, res) => {
     console.log("you wanna new post do ya??");
@@ -708,6 +757,10 @@ app.put("/articles/:id", (req, res) => {
                 articlesActive: "active", aboutActive: "", arcadeActive: "", projectActive: ""});
         });
     }
+});*/
+
+/*app.param("id", (req, res, next, value) => {
+    next();
 });*/
 
 server.listen(port, () => {console.log("server running on port " + port)});
