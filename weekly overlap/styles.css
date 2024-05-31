@@ -1,0 +1,59 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Kalam:wght@300;400;700&display=swap');
+
+
+body{
+    background-image: url('Simple\ Shiny.svg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    overflow-y: hidden;
+}
+
+h1{
+    font-family: 'Kalam', cursive;
+}
+
+#purchaseSteps{
+    font-size: 1.25rem !important;
+}
+
+.py-5{
+    padding-top: 2.5rem !important;
+}
+
+#backgroundThanks{
+    text-align: right;
+    margin: 0 15px 5px 0;
+}
+
+#dialogBox{
+    background-image: url('Simple\ Shiny.svg');
+    border-radius: 2%;
+    border-style: none;
+    box-shadow: -5px 5px 25px rgba(0, 0, 0, .75);
+    font-size: 1.5rem;
+
+    animation: forwards;
+    animation-name: zoomIn;
+    animation-duration: .5s;
+    /*background: rgba(255,255,255,0.);*/
+}
+
+::backdrop{
+    background: rgba(255,255,255,0.15);
+}
+
+@media (min-width: 200px) and (max-width: 992px) {
+    body{
+        overflow-y: visible;
+    }
+}
+
+@keyframes zoomIn {
+    0%{
+        scale: 0;
+    }
+    100%{
+        scale: 1;
+    }
+}
