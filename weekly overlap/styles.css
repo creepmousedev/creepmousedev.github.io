@@ -51,7 +51,7 @@ h1{
 
 @media (min-width: 320px) and (max-width: 575px){
     #purchaseSteps{
-        font-size: 1rem !important;
+        font-size: 1.1rem !important;
     }
 }
 
