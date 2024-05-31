@@ -49,6 +49,12 @@ h1{
     }
 }
 
+@media (min-width: 320px) and (max-width: 575px){
+    #purchaseSteps{
+        font-size: 1rem !important;
+    }
+}
+
 @keyframes zoomIn {
     0%{
         scale: 0;
