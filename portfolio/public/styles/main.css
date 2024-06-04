@@ -186,7 +186,12 @@ body{
 }
 
 #backgroundThanks{
+    margin-top: 100px;
     text-align: right;
+}
+
+.blog-post{
+    margin-bottom: 100px;
 }
 
 @keyframes zoomIn {
