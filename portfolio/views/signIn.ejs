@@ -7,7 +7,7 @@
         <p class="signInMessage"><%= signInMessage %></p>
       <% } %>
       <div class="form-floating">
-        <input type="user" class="form-control" id="floatingInput" name="userLogin" placeholder="name@example.com" required minlength="3" maxlength="15">
+        <input type="user" class="form-control inputBox" id="floatingInput" name="userLogin" placeholder="name@example.com" required minlength="3" maxlength="15">
         <label for="floatingInput">User Name</label>
       </div>
       <!--<div class="form-floating">
@@ -21,7 +21,7 @@
           Remember me
         </label>
       </div>-->
-      <button class="btn btn-primary w-50 py-2 align-self-center" type="submit">Sign in</button>
+      <button class="btn btn-primary w-50 py-2 align-self-center submitButtons" type="submit">Sign in</button>
     </form>
 
     <br>
@@ -33,11 +33,11 @@
           <p class="signInMessage"><%= createMessage %></p>
         <% } %>
         <div class="form-floating">
-          <input class="form-control" id="floatingInput" name="user" placeholder="name@example.com" required minlength="3" maxlength="15">
+          <input class="form-control inputBox" id="floatingInput" name="user" placeholder="name@example.com" required minlength="3" maxlength="15">
           <label for="floatingInput">User Name</label>
         </div>
-        <div class="form-floating">
-          <input class="form-control" id="floatingPassword" name="firstName" placeholder="Password" required minlength="3" maxlength="15">
+        <div class="form-floating" id="firstNameBox">
+          <input class="form-control inputBox" id="floatingPassword" name="firstName" placeholder="Password" required minlength="3" maxlength="15">
           <label for="floatingPassword">First Name</label>
         </div>
     
@@ -47,7 +47,7 @@
             Remember me
           </label>
         </div>-->
-        <button class="btn btn-primary w-50 py-2 align-self-center" type="submit">Create Account</button>
+        <button class="btn btn-primary w-50 py-2 align-self-center submitButtons" type="submit">Create Account</button>
       </form>
 </main>
 
