@@ -1,5 +1,11 @@
 <%- include("partials/header.ejs") %>
 
+<style>
+  #backgroundThanks{
+    margin-bottom: 200px;
+  }
+</style>
+
 <div id="flexContainer">
     <% if(locals.isAdmin){ %>
      <form action="/submit" method="post" id="newPostForm">
