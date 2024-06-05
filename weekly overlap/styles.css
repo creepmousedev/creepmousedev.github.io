@@ -6,7 +6,6 @@ body{
     background-image: url('Simple\ Shiny.svg');
     background-size: cover;
     background-repeat: no-repeat;
-    overflow-y: hidden;
 }
 
 h1{
