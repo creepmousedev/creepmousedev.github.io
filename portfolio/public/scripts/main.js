@@ -22,13 +22,11 @@ function weather(){
     navigator.geolocation.getCurrentPosition((position) => {
         if(position){
         socket.emit('send position', position.coords.latitude, position.coords.longitude);
-        setTimeout(weather, 1800000);
         }
     });
 }
 
 function getTime(){
-
     let time = new Date(Date.now());
     document.getElementById("time").innerText = time.toLocaleTimeString('en-US');
     setTimeout(getTime, 1);
