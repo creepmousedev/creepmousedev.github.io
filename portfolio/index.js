@@ -364,10 +364,13 @@ io.on('connection', async(socket) => {
             try{
                 const hourly = await axios.get(result.properties.forecastHourly);
     
-                weather.temp = hourly.data.properties.periods[0].temperature;
-                weather.forecast = hourly.data.properties.periods[0].shortForecast;
+                if(weather.temp === ""){
+                    console.log("hello");
+                    weather.temp = hourly.data.properties.periods[0].temperature;
+                    weather.forecast = hourly.data.properties.periods[0].shortForecast;
                 
-                io.in(socket.id).emit('send weather', weather.temp, weather.forecast);
+                    io.in(socket.id).emit('send weather', weather.temp, weather.forecast);
+                }
             } catch (error) {
                 console.log(error);
             }
@@ -538,7 +541,7 @@ app.post("/submit", async(req, res) => {
 app.get("/about", (req, res) => {
     
     let currentUser;
-    getUser(req) === "user not found in database" ? currentUser = "" : currentUser = getUser(req).user;
+    getUser(req) === "user not found in database" ? currentUser = "" : currentUser = getUser(req);
 
     res.render("about.ejs", {currentUser: currentUser, articlesActive: "", aboutActive: "active", arcadeActive: "", projectActive: "",
                              temp: weather.temp,
@@ -593,25 +596,17 @@ app.get("/signIn", (req, res) => {
 });
 
 app.get("/signOut", (req, res) => {
-
-    let afterSignOut;
+    let signedOut;
     connectedUsers.forEach((user) => {
         if(user.sessionID === req.cookies['session_id']){
             user.user = "";
             user.isAdmin = false;
             user.id = 0;
             console.log(user.afterSignIn);
-            afterSignOut = user.afterSignIn.replace('/', '') + '.ejs';
-            console.log(afterSignOut);
-                        //req.url === '/' ? user.afterSignIn = '/' : user.afterSignIn = req.url.replace('/', '') + '.ejs';
-
+            signedOut = user.afterSignIn;
         }
     });
-
-    res.render(afterSignOut, {articlesActive: "", aboutActive: "", arcadeActive: "", projectActive: "",
-    temp: weather.temp,
-    forecast: weather.forecast,
-    });
+    res.redirect(signedOut);
 });
 
 app.post("/signIn", async(req, res) => {
