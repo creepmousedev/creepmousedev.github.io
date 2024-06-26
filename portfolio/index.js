@@ -249,10 +249,10 @@ io.on('connection', async(socket) => {
             temp: "",
             forecast: ""
         }
-        console.log(connectedUsers.length);
+        /*console.log(connectedUsers.length);
         if(connectedUsers.length === 0){
             connectedUsers.push(currentUser);
-        }
+        }*/
 
         if(callback === 'cookie created'){
             console.log('time to make the donuts');
@@ -270,20 +270,6 @@ io.on('connection', async(socket) => {
         } 
     });
 
-    //NOT SURE IF THE BELOW IS USED OR NOT, BUT GOTTA CLEAN UP
-    /*if(playerOneName){
-        arrayOfClients.forEach((player) => {
-            if(playerOneName === player.name){
-                console.log(`the player is: ${player.name}`);
-                socket.join(player.room);
-                
-            }
-        });
-        console.log(arrayOfClients);
-        console.log(`current room: ${currentRoom}`);
-    }*/
-
-    
     
     socket.on('enter name', (playerName) => {
         if(!playerOneName){
@@ -539,10 +525,15 @@ io.on('connection', async(socket) => {
 
 app.get("/", async(req, res) => {
 
+    let currentUser = Object.assign({}, getUser(req));
+
     try{
         let data = await db.query('SELECT * FROM blog_posts JOIN users ON users.id = user_id');
-        res.render("blog.ejs", {articlesActive: "active", aboutActive: "", arcadeActive: "", projectActive: "",
+        res.render("blog.ejs", {currentUser: currentUser.user, articlesActive: "active", aboutActive: "", arcadeActive: "", projectActive: "",
                                  posts: data.rows,
+                                 temp: currentUser.temp,
+                                 forecast: currentUser.forecast,
+                                 isAdmin: currentUser.isAdmin
                                  });
     } catch (error) {
         console.log(error);
