@@ -10,6 +10,7 @@ import { fileURLToPath } from "url";
 import pg from "pg";
 import env from "dotenv";
 import cookieParser from "cookie-parser";
+import { getuid } from "process";
 
 const app = express();
 const server = createServer(app);
@@ -40,11 +41,6 @@ function Client(name, room){
     this.room = room;
 }
 
-const weather = {
-    temp: "",
-    forecast: ""
-}
-
 const pokemonOfTheDay = {
     name: "",
     evolvesFrom: "",
@@ -63,7 +59,7 @@ app.use(trackPath);
 function trackPath(req, res, next){
     
     connectedUsers.forEach((user) => {
-        if(user.sessionID === req.cookies['session_id'] && req.url !== '/signIn' && req.url !== '/createUser' && req.url !== '/signOut'){
+        if(user.sessionID === req.cookies['session_id'] && req.url !== '/signIn' && req.url !== '/createUser' && req.url !== '/signOut' && req.url !== '/submit'){
             //req.url === '/' ? user.afterSignIn = '/' : user.afterSignIn = req.url.replace('/', '') + '.ejs';
             user.afterSignIn = req.url;
         }
@@ -71,10 +67,28 @@ function trackPath(req, res, next){
     next();
 }
 
-function getUser(req, session){
+function getUser(req){
 
-    let message;
+    let returnedUser = {};
+    
     connectedUsers.forEach((user) => {
+        console.log("there's a cookie");
+            if(user.sessionID === req.cookies['session_id']){
+                console.log("sending user");
+                console.log(typeof(user));
+                returnedUser = Object.assign({}, user);
+                
+            }
+    });
+    
+    console.log("double check");
+    console.log(returnedUser); 
+    console.log("good user");   
+
+    return returnedUser;
+
+
+   /*connectedUsers.forEach((user) => {
         if(req === ""){
             console.log('start');
             console.log(user);
@@ -82,23 +96,33 @@ function getUser(req, session){
             console.log('end');
             if(user.sessionID === session){
                 console.log(`hello there`);
-                message = user.id;
+                currentUser = user.id;
             }
         }
         else{
             if(user.sessionID === req.cookies['session_id']){
+                console.log("everytime");
                 if(user.user !== ""){
-                    message = user.user;
+                    currentUser = user;
                 }
                 else{
-                    message = "user not found in database";
+                    currentUser = "user not found in database";
                 }
+                return user;
             }
         }
+        if(user.sessionID === req.cookies['session_id']){
+            console.log("yo");
+            console.log(user);
+            return user;
+        }
         
-    });
-    
-    return message;
+        
+    });*/
+
+    //console.log("below is the cookie: ");
+    //console.log(req.cookies);
+    //req.cookies['session_id'] === undefined ? console.log(true) : console.log(false);
 }
 
 async function getCardInfo(){
@@ -221,7 +245,9 @@ io.on('connection', async(socket) => {
             isAdmin: false,
             id: 0,
             afterSignIn: "",
-            sessionID: ""
+            sessionID: "",
+            temp: "",
+            forecast: ""
         }
         console.log(connectedUsers.length);
         if(connectedUsers.length === 0){
@@ -356,28 +382,59 @@ io.on('connection', async(socket) => {
     });
 
     //FUNCTIONS BELOW ARE FOR GETTING WEATHER
-    socket.on('send position', async(lat, lon) => {
-        try {
+    socket.on('send position', async(lat, lon, sessionId) => {
+
+        connectedUsers.forEach(async(user) => {
+            if(user.sessionID === sessionId){
+                if(user.temp === "" && user.forecast === ""){
+                    console.log('getting weather');
+                    try {
+                        const response = await axios.get(`https://api.weather.gov/points/${lat},${lon}`);
+                        const result = response.data;
+                        try{
+                            const hourly = await axios.get(result.properties.forecastHourly);
+            
+                        
+                            
+                                    user.temp = hourly.data.properties.periods[0].temperature;
+                                    user.forecast = hourly.data.properties.periods[0].shortForecast;
+                                    io.in(socket.id).emit('send weather', user.temp, user.forecast);
+                           
+                            console.log(connectedUsers);
+                        } catch (error) {
+                            console.log(error);
+                        }
+                    
+                    } catch (error) {
+                        console.error("Failed to make request:", error.message);
+                    }
+                }
+            }
+        });
+
+        /*try {
             const response = await axios.get(`https://api.weather.gov/points/${lat},${lon}`);
             const result = response.data;
-            console.log(result.properties.forecastHourly);
             try{
                 const hourly = await axios.get(result.properties.forecastHourly);
-    
-                if(weather.temp === ""){
-                    console.log("hello");
-                    weather.temp = hourly.data.properties.periods[0].temperature;
-                    weather.forecast = hourly.data.properties.periods[0].shortForecast;
-                
-                    io.in(socket.id).emit('send weather', weather.temp, weather.forecast);
-                }
+
+            
+                connectedUsers.forEach((user) => {
+                    if(user.sessionID === sessionId){
+                        user.temp = hourly.data.properties.periods[0].temperature;
+                        user.forecast = hourly.data.properties.periods[0].shortForecast;
+                        io.in(socket.id).emit('send weather', user.temp, user.forecast);
+                    }
+                });
+
+                console.log(connectedUsers);
             } catch (error) {
                 console.log(error);
             }
         
         } catch (error) {
             console.error("Failed to make request:", error.message);
-        }
+        }*/
     });
     
     socket.on('get best', async(gameMode, sessionID) => {
@@ -482,16 +539,10 @@ io.on('connection', async(socket) => {
 
 app.get("/", async(req, res) => {
 
-    let currentUser;
-    getUser(req) === "user not found in database" ? currentUser = "" : currentUser = getUser(req);
-    
     try{
         let data = await db.query('SELECT * FROM blog_posts JOIN users ON users.id = user_id');
-        console.log(data.rows);
-        res.render("blog.ejs", {currentUser: currentUser, articlesActive: "active", aboutActive: "", arcadeActive: "", projectActive: "",
-                                 temp: weather.temp,
-                                 forecast: weather.forecast,
-                                 posts: data.rows
+        res.render("blog.ejs", {articlesActive: "active", aboutActive: "", arcadeActive: "", projectActive: "",
+                                 posts: data.rows,
                                  });
     } catch (error) {
         console.log(error);
@@ -501,16 +552,15 @@ app.get("/", async(req, res) => {
 
 app.get("/blog", async(req, res) => {
 
-    let currentUser;
-    getUser(req) === "user not found in database" ? currentUser = "" : currentUser = getUser(req);
+    let currentUser = Object.assign({}, getUser(req));
 
     try{
         let data = await db.query('SELECT * FROM blog_posts JOIN users ON users.id = user_id');
-        console.log(data.rows);
-        res.render("blog.ejs", {currentUser: currentUser, articlesActive: "active", aboutActive: "", arcadeActive: "", projectActive: "",
-                                 temp: weather.temp,
-                                 forecast: weather.forecast,
-                                 posts: data.rows});
+        res.render("blog.ejs", {currentUser: currentUser.user, articlesActive: "active", aboutActive: "", arcadeActive: "", projectActive: "",
+                                 temp: currentUser.temp,
+                                 forecast: currentUser.forecast,
+                                 posts: data.rows,
+                                 isAdmin: currentUser.isAdmin});
         } catch (error) {
             console.log(error);
     }
@@ -519,9 +569,14 @@ app.get("/blog", async(req, res) => {
 
 app.post("/submit", async(req, res) => {
 
+    
+    
+
     if(!req.body.title || !req.body.message || req.body.choice === "Cancel"){
-        res.render("blog.ejs", {theArray: articleArray, newPost: false, articlesActive: "active", aboutActive: "", arcadeActive: "", projectActive: "",
-                                currentUser: currentUser.user});
+        let data = await db.query('SELECT * FROM blog_posts JOIN users ON users.id = user_id');
+        res.render("blog.ejs", {newPost: false, articlesActive: "active", aboutActive: "", arcadeActive: "", projectActive: "",
+                                currentUser: currentUser.user,
+                                posts: data.rows});
     }
 
     else{
@@ -529,8 +584,8 @@ app.post("/submit", async(req, res) => {
             await db.query('INSERT INTO blog_posts (message, user_id, post_date, title) VALUES ($1, $2, $3, $4)', [req.body.message, currentUser.id, dateFormatter(Date.now(), 'fullDate'), req.body.title]);
             let data = await db.query('SELECT * FROM blog_posts JOIN users ON users.id = user_id');
             res.render("blog.ejs", {articlesActive: "active", aboutActive: "", arcadeActive: "", projectActive: "",
-                                     temp: weather.temp,
-                                     forecast: weather.forecast,
+                                     temp: currentUser.temp,
+                                     forecast: currentUser.forecast,
                                      posts: data.rows});
             } catch (error) {
                 console.log(error);
@@ -540,34 +595,31 @@ app.post("/submit", async(req, res) => {
 
 app.get("/about", (req, res) => {
     
-    let currentUser;
-    getUser(req) === "user not found in database" ? currentUser = "" : currentUser = getUser(req);
-
-    res.render("about.ejs", {currentUser: currentUser, articlesActive: "", aboutActive: "active", arcadeActive: "", projectActive: "",
-                             temp: weather.temp,
-                             forecast: weather.forecast,
-                            test: true});
+    let currentUser = Object.assign({}, getUser(req));
+    
+    res.render("about.ejs", {currentUser: currentUser.user, articlesActive: "", aboutActive: "active", arcadeActive: "", projectActive: "",
+                             temp: currentUser.temp,
+                             forecast: currentUser.forecast,
+                             test: true});
 });
 
 app.get("/arcade", (req, res) => {
     
-    let currentUser;
-    getUser(req) === "user not found in database" ? currentUser = "" : currentUser = getUser(req);
+    let currentUser = Object.assign({}, getUser(req));
 
-    res.render("arcade.ejs", {currentUser: currentUser, articlesActive: "", aboutActive: "", arcadeActive: "active", projectActive: "",
-                               temp: weather.temp,
-                               forecast: weather.forecast});
+    res.render("arcade.ejs", {currentUser: currentUser.user, articlesActive: "", aboutActive: "", arcadeActive: "active", projectActive: "",
+                               temp: currentUser.temp,
+                               forecast: currentUser.forecast});
 });
 
 app.get("/projects", async(req, res) => {
 
-    let currentUser;
-    getUser(req) === "user not found in database" ? currentUser = "" : currentUser = getUser(req);
+    let currentUser = Object.assign({}, getUser(req));
 
     await getCardInfo();
-    res.render("projects.ejs", {currentUser: currentUser, articlesActive: "", aboutActive: "", arcadeActive: "", projectActive: "active",
-                                temp: weather.temp,
-                                forecast: weather.forecast,
+    res.render("projects.ejs", {currentUser: currentUser.user, articlesActive: "", aboutActive: "", arcadeActive: "", projectActive: "active",
+                                temp: currentUser.temp,
+                                forecast: currentUser.forecast,
                                 image: pokemonOfTheDay.image,
                                 name: pokemonOfTheDay.name,
                                 type: pokemonOfTheDay.type,
@@ -589,10 +641,12 @@ app.get("/tic-tac", (req, res) => {
 });
 
 app.get("/signIn", (req, res) => {
+
+    let currentUser = Object.assign({}, getUser(req));
     
     res.render("signIn.ejs", {articlesActive: "", aboutActive: "", arcadeActive: "", projectActive: "",
-                              temp: weather.temp,
-                              forecast: weather.forecast});
+                              temp: currentUser.temp,
+                              forecast: currentUser.forecast});
 });
 
 app.get("/signOut", (req, res) => {
@@ -610,6 +664,9 @@ app.get("/signOut", (req, res) => {
 });
 
 app.post("/signIn", async(req, res) => {
+
+    let currentUser = Object.assign({}, getUser(req));
+
     let userName = req.body.userLogin.trim();
     let timesLoggedIn = 0;
     let message = "";
@@ -650,8 +707,8 @@ app.post("/signIn", async(req, res) => {
         console.log(error);
     }
     res.render("signIn.ejs", {articlesActive: "", aboutActive: "", arcadeActive: "", projectActive: "",
-                                                  temp: weather.temp,
-                                                  forecast: weather.forecast,
+                                                  temp: currentUser.temp,
+                                                  forecast: currentUser.forecast,
                                                   signInMessage: message});
 });
 
