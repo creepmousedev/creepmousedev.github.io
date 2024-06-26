@@ -21,7 +21,7 @@ getTime();
 function weather(){
     navigator.geolocation.getCurrentPosition((position) => {
         if(position){
-        socket.emit('send position', position.coords.latitude, position.coords.longitude);
+        socket.emit('send position', position.coords.latitude, position.coords.longitude, document.cookie.split('=')[1]);
         }
     });
 }
@@ -33,6 +33,7 @@ function getTime(){
 }
 
 socket.on('send weather', (temp, forecast) => {
+    console.log('is this used anymore');
     document.getElementById("temperature").innerText = temp + '°F';
     document.getElementById("forecast").innerText = forecast;
 });
