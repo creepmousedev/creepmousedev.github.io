@@ -367,26 +367,23 @@ io.on('connection', async(socket) => {
         io.in(socket.id).emit('newCard', image, name, type, evolveImage, evolvesFrom, color);
     });
 
-    //FUNCTIONS BELOW ARE FOR GETTING WEATHER
+    //FUNCTION BELOW IS FOR GETTING WEATHER
     socket.on('send position', async(lat, lon, sessionId) => {
 
         connectedUsers.forEach(async(user) => {
             if(user.sessionID === sessionId){
-                if(user.temp === "" && user.forecast === ""){
+                //if(user.temp === "" && user.forecast === ""){
                     console.log('getting weather');
                     try {
                         const response = await axios.get(`https://api.weather.gov/points/${lat},${lon}`);
                         const result = response.data;
                         try{
                             const hourly = await axios.get(result.properties.forecastHourly);
-            
-                        
-                            
-                                    user.temp = hourly.data.properties.periods[0].temperature;
-                                    user.forecast = hourly.data.properties.periods[0].shortForecast;
-                                    io.in(socket.id).emit('send weather', user.temp, user.forecast);
-                           
-                            console.log(connectedUsers);
+                            if(user.temp !== hourly.data.properties.periods[0].temperature || user.forecast !== hourly.data.properties.periods[0].shortForecast){
+                                user.temp = hourly.data.properties.periods[0].temperature;
+                                user.forecast = hourly.data.properties.periods[0].shortForecast;
+                                io.in(socket.id).emit('send weather', user.temp, user.forecast);
+                            }
                         } catch (error) {
                             console.log(error);
                         }
@@ -394,33 +391,9 @@ io.on('connection', async(socket) => {
                     } catch (error) {
                         console.error("Failed to make request:", error.message);
                     }
-                }
+                //}
             }
         });
-
-        /*try {
-            const response = await axios.get(`https://api.weather.gov/points/${lat},${lon}`);
-            const result = response.data;
-            try{
-                const hourly = await axios.get(result.properties.forecastHourly);
-
-            
-                connectedUsers.forEach((user) => {
-                    if(user.sessionID === sessionId){
-                        user.temp = hourly.data.properties.periods[0].temperature;
-                        user.forecast = hourly.data.properties.periods[0].shortForecast;
-                        io.in(socket.id).emit('send weather', user.temp, user.forecast);
-                    }
-                });
-
-                console.log(connectedUsers);
-            } catch (error) {
-                console.log(error);
-            }
-        
-        } catch (error) {
-            console.error("Failed to make request:", error.message);
-        }*/
     });
     
     socket.on('get best', async(gameMode, sessionID) => {
