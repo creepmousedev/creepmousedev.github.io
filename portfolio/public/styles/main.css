@@ -194,6 +194,10 @@ body{
     margin-bottom: 100px;
 }
 
+.signInMessage{
+    color: red;
+}
+
 @keyframes zoomIn {
     0%{
         scale: 1;
