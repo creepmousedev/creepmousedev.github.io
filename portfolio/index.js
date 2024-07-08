@@ -86,43 +86,6 @@ function getUser(req){
     console.log("good user");   
 
     return returnedUser;
-
-
-   /*connectedUsers.forEach((user) => {
-        if(req === ""){
-            console.log('start');
-            console.log(user);
-            console.log(session);
-            console.log('end');
-            if(user.sessionID === session){
-                console.log(`hello there`);
-                currentUser = user.id;
-            }
-        }
-        else{
-            if(user.sessionID === req.cookies['session_id']){
-                console.log("everytime");
-                if(user.user !== ""){
-                    currentUser = user;
-                }
-                else{
-                    currentUser = "user not found in database";
-                }
-                return user;
-            }
-        }
-        if(user.sessionID === req.cookies['session_id']){
-            console.log("yo");
-            console.log(user);
-            return user;
-        }
-        
-        
-    });*/
-
-    //console.log("below is the cookie: ");
-    //console.log(req.cookies);
-    //req.cookies['session_id'] === undefined ? console.log(true) : console.log(false);
 }
 
 async function getCardInfo(){
@@ -228,8 +191,8 @@ function arcadeGate(game, req, res){
             }
             else{
                 res.render("signIn.ejs", {articlesActive: "", aboutActive: "", arcadeActive: "active", projectActive: "",
-                              temp: weather.temp,
-                              forecast: weather.forecast});
+                              temp: user.temp,
+                              forecast: user.forecast});
             }
         }
     });
@@ -372,26 +335,23 @@ io.on('connection', async(socket) => {
 
         connectedUsers.forEach(async(user) => {
             if(user.sessionID === sessionId){
-                //if(user.temp === "" && user.forecast === ""){
-                    console.log('getting weather');
-                    try {
-                        const response = await axios.get(`https://api.weather.gov/points/${lat},${lon}`);
-                        const result = response.data;
-                        try{
-                            const hourly = await axios.get(result.properties.forecastHourly);
-                            if(user.temp !== hourly.data.properties.periods[0].temperature || user.forecast !== hourly.data.properties.periods[0].shortForecast){
-                                user.temp = hourly.data.properties.periods[0].temperature;
-                                user.forecast = hourly.data.properties.periods[0].shortForecast;
-                                io.in(socket.id).emit('send weather', user.temp, user.forecast);
-                            }
-                        } catch (error) {
-                            console.log(error);
+                console.log('getting weather');
+                try {
+                    const response = await axios.get(`https://api.weather.gov/points/${lat},${lon}`);
+                    try{
+                        const hourly = await axios.get(response.data.properties.forecastHourly);
+                        if(user.temp !== hourly.data.properties.periods[0].temperature || user.forecast !== hourly.data.properties.periods[0].shortForecast){
+                            user.temp = hourly.data.properties.periods[0].temperature;
+                            user.forecast = hourly.data.properties.periods[0].shortForecast;
+                            io.in(socket.id).emit('send weather', user.temp, user.forecast);
                         }
-                    
                     } catch (error) {
-                        console.error("Failed to make request:", error.message);
+                        console.log(error);
                     }
-                //}
+                    
+                } catch (error) {
+                    console.error("Failed to make request:", error.message);
+                }
             }
         });
     });
