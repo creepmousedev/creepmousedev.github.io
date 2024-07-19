@@ -18,6 +18,10 @@ body{
     margin: 0;
 }
 
+#userContainer{
+    margin-right: 20px;
+}
+
 .zoomOff{
     animation: forwards;
     animation-name: zoomOut;
