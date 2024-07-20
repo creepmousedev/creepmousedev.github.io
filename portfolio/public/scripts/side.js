@@ -3,13 +3,11 @@ let degrees = 0;
 
 document.getElementById("card").addEventListener("pointerdown", () => {
     socket.emit('newCard');
-    degrees += 180;
-    document.getElementById("card").style.transform = `rotateY(${degrees+'deg'})`;
 });
 
 socket.on('newCard', (image, name, type, evolveImage, evolvesFrom, color) => {
 
-    degrees += 180;
+    degrees += 360;
     document.getElementById("card").style.transform = `rotateY(${degrees+'deg'})`;
     
     setTimeout(() => {
