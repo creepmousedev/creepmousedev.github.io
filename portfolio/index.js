@@ -10,7 +10,6 @@ import { fileURLToPath } from "url";
 import pg from "pg";
 import env from "dotenv";
 import cookieParser from "cookie-parser";
-import { getuid } from "process";
 
 const app = express();
 const server = createServer(app);
@@ -67,23 +66,29 @@ function trackPath(req, res, next){
     next();
 }
 
-function getUser(req){
+function getUser(req, cookie){
 
     let returnedUser = {};
-    
+
+    console.log('start');
+    console.log(!req);
+    console.log(req.cookies);
+    console.log('end');
+
     connectedUsers.forEach((user) => {
         console.log("there's a cookie");
-            if(user.sessionID === req.cookies['session_id']){
-                console.log("sending user");
-                console.log(typeof(user));
-                returnedUser = Object.assign({}, user);
-                
+            if(!req){
+                if(user.sessionID === cookie){
+                    returnedUser = user.id
+                }
             }
-    });
-    
-    console.log("double check");
-    console.log(returnedUser); 
-    console.log("good user");   
+            else{
+                if(user.sessionID === req.cookies['session_id']){
+                    returnedUser = Object.assign({}, user);
+                    
+                }
+            }
+    }); 
 
     return returnedUser;
 }
@@ -182,6 +187,7 @@ async function getCardInfo(){
 
 function arcadeGate(game, req, res){
 
+    let currentUser = Object.assign({}, getUser(req));
     //let currentUser = "";
     connectedUsers.forEach((user) => {
         if(user.sessionID === req.cookies['session_id']){
@@ -191,8 +197,8 @@ function arcadeGate(game, req, res){
             }
             else{
                 res.render("signIn.ejs", {articlesActive: "", aboutActive: "", arcadeActive: "active", projectActive: "",
-                              temp: user.temp,
-                              forecast: user.forecast});
+                              temp: currentUser.temp,
+                              forecast: currentUser.forecast});
             }
         }
     });
@@ -359,6 +365,7 @@ io.on('connection', async(socket) => {
     socket.on('get best', async(gameMode, sessionID) => {
 
         let currentUser = getUser("", sessionID);
+        console.log(`user: ${currentUser}`);
         let bestTime;
         let data = await db.query(`SELECT * FROM game_scores WHERE ${currentUser} = player_id AND game_title = 'Match Game'`);
         if(data.rows.length === 1){
